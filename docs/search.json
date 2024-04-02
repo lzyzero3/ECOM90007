@@ -2,22 +2,36 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Title of your work",
+    "title": "Forecasting Lending Amount in Australia Economy Through Bayesian VAR Approach",
     "section": "",
-    "text": "Abstract. This is a suggested formatting for your abstract. This quarto document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology.\nKeywords. bsvars, impulse responses, quarto, R, tax shocks"
+    "text": "This research project works for the assessment in ECOM90007 Macroeconometrics, which is the capstone subject in Master of Applied Econometrics in University of Melbourne.\nKeywords. bsvars, forecasting, loan market, lending rates, shrinkage, housing market"
   },
   {
-    "objectID": "index.html#a-simple-example",
-    "href": "index.html#a-simple-example",
-    "title": "Title of your work",
-    "section": "A Simple Example",
-    "text": "A Simple Example\nThis is a Quarto document in which we can cite the bsvars package by Woźniak (2022). Look for more info at package CRAN website.\nSimply load the package by running\n\n\n\nThe code below performs simple computations for sampling posterior draws of the impulse responses. The first line uploads the data from the package,another sets the seed for reproducible computations, and then the pipe |> is used to streamline the model specification, estimation including the first burn-in run to obtain convergence and finally, the computed impulse responses are saved in object irf.\n\ndata(us_fiscal_lsuw)\nset.seed(123)\nus_fiscal_lsuw |>\n  specify_bsvar$new(p = 1) |>\n  estimate(S = 1000, show_progress = FALSE) |> \n  estimate(S = 2000, show_progress = FALSE) |> \n  compute_impulse_responses(horizon = 20) -> irf\n\nThe code above is visible as the R chunk contains the setting #| echo: true.\nTable 1 reports the posterior means of the gross domestic product response to an unanticipated tax increase by 1 pp.\n\n\n\n\nTable 1: Impulse response of gdp to unanticipated tax increase by 1 pp. within two years\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n0\n1\n2\n3\n4\n5\n6\n7\n8\n\n\n\n\nchange in gdp [%]\n0.199\n0.184\n0.17\n0.159\n0.148\n0.139\n0.13\n0.123\n0.116\n\n\n\n\n\n\nFigure 1 presents the same reaction over the horizon of five years.\n\n\n\n\n\nFigure 1: Impulse response of gdp to unanticipated tax increase by 1 pp. within five years"
+    "objectID": "index.html#the-research-objective-and-question",
+    "href": "index.html#the-research-objective-and-question",
+    "title": "Forecasting Lending Amount in Australia Economy Through Bayesian VAR Approach",
+    "section": "The Research Objective and Question",
+    "text": "The Research Objective and Question\nThe research aims to forecast lending indicators, specifically lending amounts, in Australia. Thus, the research question is: How can the lending indicators in Australia be accurately forecasted, and what are the resulting forecasts?"
   },
   {
-    "objectID": "index.html#some-hints",
-    "href": "index.html#some-hints",
-    "title": "Title of your work",
-    "section": "Some Hints",
-    "text": "Some Hints\nHave a look at how to work with RStudio and GitHub at: How to use git and GitHub with R.\nThese are many different ways of how to work with references in RStudio: Preview Citations.\nTo make all the R code visible on the website change the settings in the preabmble of this document to:\nexecute:\n  echo: true"
+    "objectID": "index.html#motivation-of-research",
+    "href": "index.html#motivation-of-research",
+    "title": "Forecasting Lending Amount in Australia Economy Through Bayesian VAR Approach",
+    "section": "Motivation of Research",
+    "text": "Motivation of Research\nFor banks and related financial institutions, they need to manage the risks associated with future interest rate fluctuations. Accurate lending amount forecasting can assist them in better assessing and managing risks, thereby safeguarding their assets and maintaining financial stability."
+  },
+  {
+    "objectID": "index.html#variables-selection",
+    "href": "index.html#variables-selection",
+    "title": "Forecasting Lending Amount in Australia Economy Through Bayesian VAR Approach",
+    "section": "Variables Selection",
+    "text": "Variables Selection\nThe selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting.\nThese indicators are closely linked to both loan rates and volumes. An increase in CPI and housing price indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher loan volumes and rates. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers.\nTherefore, in my project, these following specific variables are used in BVAR model:\n\n\\(M1_t\\): M1 aggregate from RBA Database\n\\(CPI_t\\): CPI aggregate from ABS Database\n\\(RPPI_t\\): Residential Property Price Index aggregate from ABS Database\n\\(GDP_t\\): Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database\n\\(UNEMPLOY_t\\): Unemplyemnt person aggregate from ABS Database\n\n\n\n\n\n\nFor the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:\n\n\\(House Lending_t\\): House lending volume aggregate from RBA\n\\(Business Lending_t\\): Business lending volume aggregate from RBA\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n                         Test Test_Statistic   P_Value Lags\nDickey-Fuller  rp_price_index    -3.04993172 0.1473984    5\nDickey-Fuller1   Unemployment    -2.43096944 0.3952424    5\nDickey-Fuller2             M1    -2.60332764 0.3229284    5\nDickey-Fuller3            PPI    -1.93273093 0.6045645    5\nDickey-Fuller4            CPI    -1.25293390 0.8911931    5\nDickey-Fuller5            GDP    -2.57629126 0.3335192    5\nDickey-Fuller6      Houselend    -0.01426528 0.9900000    5\nDickey-Fuller7   Businesslend    -1.50525363 0.7877237    5\n\n\n\n\n                                            Test Test_Statistic    P_Value Lags\nDickey-Fuller  rp_price_index - First Difference      -2.434671 0.39828025    5\nDickey-Fuller1   Unemployment - First Difference     -10.088903 0.01000000    5\nDickey-Fuller2             M1 - First Difference      -9.972948 0.01000000    5\nDickey-Fuller3            PPI - First Difference      -3.817442 0.02076893    5\nDickey-Fuller4            CPI - First Difference      -4.085296 0.01000000    5\nDickey-Fuller5            GDP - First Difference      -6.707176 0.01000000    5\nDickey-Fuller6      Houselend - First Difference      -7.062507 0.01000000    5\nDickey-Fuller7   Businesslend - First Difference      -6.713399 0.01000000    5"
+  },
+  {
+    "objectID": "index.html#the-econometric-modelling",
+    "href": "index.html#the-econometric-modelling",
+    "title": "Forecasting Lending Amount in Australia Economy Through Bayesian VAR Approach",
+    "section": "The Econometric Modelling",
+    "text": "The Econometric Modelling"
   }
 ]

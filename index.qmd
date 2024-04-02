@@ -1,80 +1,327 @@
 ---
-title: "Title of your work"
-author: "Your Name"
+title: "Forecasting Lending Amount in Australia Economy Through Bayesian VAR Approach"
+author: "Zheyuan Li"
 
 execute:
   echo: false
   
 bibliography: references.bib
 ---
-
-> **Abstract.** This is a suggested formatting for your abstract. This **quarto** document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology. 
+> This research project works for the assessment in ECOM90007 Macroeconometrics, which is 
+the capstone subject in Master of Applied Econometrics in University of Melbourne.
 >
-> **Keywords.** bsvars, impulse responses, quarto, R, tax shocks
+> **Keywords.** bsvars, forecasting, loan market, lending rates, shrinkage, housing market
+
+```{r,message=FALSE, warning=FALSE}
+library(readabs)
+library(readrba)
+library(tseries)
+library(tidyr)
+library(dplyr)
+library(forecast)
+library(ggplot2)
+library(lubridate)
+library(httr)
+library(readxl)
+library(gridExtra)
+response_1 <- GET("https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/residential-property-price-indexes-eight-capital-cities/dec-2021/641601.xlsx")
+temp_file_1 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_1, "raw"), temp_file_1)
+data <- read_excel(temp_file_1, sheet = 2)
+data <- data[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data[[1]] <- origin_date + as.numeric(data[[1]]) - 2
+dates = data[1]
+rp_price_index <- data$`Residential Property Price Index ;  Weighted average of eight capital cities ;`
+rp_price_index = as.numeric(rp_price_index)
+rp_price_index <- log(rp_price_index)
+plot_data <- data.frame(Date = dates, LogPriceIndex = rp_price_index)
+```
+
+```{r,message=FALSE, warning=FALSE}
+response_2 <- GET("https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia-detailed/feb-2024/6291014a.xlsx")
+temp_file_2 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_2, "raw"), temp_file_2)
+data_2 <- read_excel(temp_file_2, sheet = 2)
+data_2 <- data_2[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_2[[1]] <- origin_date + as.numeric(data_2[[1]]) - 2
+dates = data_2[1]
+Unemployment <- data_2$`Unemployed total ;  Persons ;`
+Unemployment = as.numeric(Unemployment)
+Unemployment <- log(Unemployment)
+plot_data_2 <- data.frame(Date = dates, LogPriceIndex = Unemployment)
+
+```
+
+```{r,message=FALSE, warning=FALSE}
+response_3 <- GET("https://www.rba.gov.au/statistics/tables/xls/d03hist.xlsx?v=2024-04-02-00-51-45")
+temp_file_3 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_3, "raw"), temp_file_3)
+data_3 <- read_excel(temp_file_3, sheet = 1,skip = 1)
+data_3 <- data_3[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_3[[1]] <- origin_date + as.numeric(data_3[[1]]) - 2
+dates = data_3[1]
+M1 <- data_3$M1
+M1 = as.numeric(M1)
+M1 <- log(M1)
+plot_data_3 <- data.frame(Date = dates, M1_Amount = M1)
+plot_data_3 <- na.omit(plot_data_3[c("Title", "M1_Amount")])
+M1 = na.omit(M1)
+```
+
+```{r,message=FALSE, warning=FALSE}
+response_4 <- GET("https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/producer-price-indexes-australia/dec-2023/642701.xlsx")
+temp_file_4 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_4, "raw"), temp_file_4)
+data_4 <- read_excel(temp_file_4, sheet = 2)
+data_4 <- data_4[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_4[[1]] <- origin_date + as.numeric(data_4[[1]]) - 2
+dates = data_4[1]
+PPI <- data_4$`Index Numbers ;  Final ;  Total (Source) ;`
+PPI = as.numeric(PPI)
+PPI <- log(PPI)
+plot_data_4 <- data.frame(Date = dates, PPI = PPI)
+```
+
+```{r,message=FALSE, warning=FALSE}
+response_5 = GET("https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/dec-quarter-2023/640101.xlsx")
+temp_file_5 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_5, "raw"), temp_file_5)
+data_5 <- read_excel(temp_file_5, sheet = 2)
+data_5 <- data_5[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_5[[1]] <- origin_date + as.numeric(data_5[[1]]) - 2
+dates = data_5[1]
+CPI <- data_5$`Index Numbers ;  All groups CPI ;  Australia ;`
+CPI = as.numeric(CPI)
+CPI <- log(CPI)
+plot_data_5 <- data.frame(Date = dates, CPI_Amount = CPI)
+```
+
+```{r,message=FALSE, warning=FALSE}
+response_6 = GET("https://www.abs.gov.au/statistics/economy/national-accounts/australian-national-accounts-national-income-expenditure-and-product/dec-2023/5206002_Expenditure_Volume_Measures.xlsx")
+temp_file_6 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_6, "raw"), temp_file_6)
+data_6 <- read_excel(temp_file_6, sheet = 2)
+data_6 <- data_6[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_6[[1]] <- origin_date + as.numeric(data_6[[1]]) - 2
+dates = data_6[1]
+GDP <- data_6$`GROSS DOMESTIC PRODUCT ;...42`
+GDP = as.numeric(GDP)
+GDP <- log(GDP)
+plot_data_6 <- data.frame(Date = dates, GDP_Amount = GDP)
+GDP = na.omit(GDP)
+```
 
 # Introduction
+This project is focusing on the credit market in Australia. It intends to use Bayesian VAR approach in forecasting of lending amounts.
 
-This is a template repository for the Research Report for **Macroeconometrics**. Learn more about about developing online reports with **quarto** at [quarto.org](https://quarto.org/).
+## The Research Objective and Question
+The research aims to forecast lending indicators, specifically lending amounts, in Australia. Thus, the research question is: How can the lending indicators in Australia be accurately forecasted, and what are the resulting forecasts?
 
-## A Simple Example
+## Motivation of Research 
+For banks and related financial institutions, they need to manage the risks associated with future interest rate fluctuations. Accurate lending amount forecasting can assist them in better assessing and managing risks, thereby safeguarding their assets and maintaining financial stability.
 
-This is a Quarto document in which we can cite the **bsvars** package by @wozniakBsvarsBayesianEstimation2022. Look for more info at [package CRAN website](https://cran.r-project.org/package=bsvars).
+# Data and Properties
+This section shows the data collection and their descriptive statistic including their series plotting and basic properties analyzing. 
 
-Simply load the package by running
-```{r package load}
-library(bsvars)
+## Variables Selection 
+The selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting.
+
+These indicators are closely linked to both loan rates and volumes. An increase in CPI and housing price indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher loan volumes and rates. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers.
+
+Therefore, in my project, these following specific variables are used in BVAR model:
+
+
+-   $M1_t$: M1 aggregate from RBA Database
+
+-   $CPI_t$: CPI aggregate from ABS Database
+
+-   $RPPI_t$: Residential Property Price Index aggregate from ABS Database
+
+-   $GDP_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
+
+-   $UNEMPLOY_t$: Unemplyemnt person aggregate from ABS Database 
+
+
+```{r warning=FALSE}
+p1 = ggplot(plot_data, aes(x = ...1, y = LogPriceIndex)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'RPPI')
+
+p2 = ggplot(plot_data_2, aes(x = ...1, y = Unemployment)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'Unemploy')
+
+p3 = ggplot(plot_data_3, aes(x = Title, y = M1_Amount)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'M1')
+
+p4 = ggplot(plot_data_4, aes(x = ...1, y = PPI)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'PPI')
+
+p5 = ggplot(plot_data_5, aes(x = ...1, y = CPI_Amount)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'CPI')
+
+p6 = ggplot(plot_data_6, aes(x = ...1, y = GDP_Amount)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'GDP')
+
+grid.arrange(p1, p2, p3, p4, p5, p6, ncol = 2)
 ```
 
-The code below performs simple computations for sampling posterior draws of the impulse responses. The first line uploads the data from the package,another sets the seed for reproducible computations, and then the pipe `|>` is used to streamline the model specification, estimation including the first burn-in run to obtain convergence and finally, the computed impulse responses are saved in object `irf`.
-```{r estimate irf}
-#| message: false
-#| echo: true
 
-data(us_fiscal_lsuw)
-set.seed(123)
-us_fiscal_lsuw |>
-  specify_bsvar$new(p = 1) |>
-  estimate(S = 1000, show_progress = FALSE) |> 
-  estimate(S = 2000, show_progress = FALSE) |> 
-  compute_impulse_responses(horizon = 20) -> irf
+For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
+
+-   $House Lending_t$: House lending volume aggregate from RBA 
+
+-   $Business Lending_t$: Business lending volume aggregate from RBA
+
+
+```{r,message=FALSE, warning=FALSE}
+response_7 = GET("https://www.rba.gov.au/statistics/tables/xls/d05hist.xlsx?v=2024-04-02-14-20-19")
+temp_file_7 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_7, "raw"), temp_file_7)
+data_7 <- read_excel(temp_file_7, sheet = 1, skip = 1)
+data_7 <- data_7[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_7[[1]] <- origin_date + as.numeric(data_7[[1]]) - 2
+dates = data_7[1]
+Houselend <- data_7$`Lending to persons; Housing; Owner-occupiers`
+Houselend = as.numeric(Houselend)
+Houselend <- log(Houselend)
+plot_data_7 <- data.frame(Date = dates, Houselend_Amount = Houselend)
+
 ```
 
-The code above is visible as the **R** chunk contains the setting `#| echo: true`.
 
-@tbl-irf reports the posterior means of the gross domestic product response to an unanticipated tax increase by 1 pp.
+
+```{r,message=FALSE, warning=FALSE}
+response_8 = GET("https://www.rba.gov.au/statistics/tables/xls/d05hist.xlsx?v=2024-04-02-14-20-19")
+temp_file_8 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_8, "raw"), temp_file_8)
+data_8 <- read_excel(temp_file_8, sheet = 1, skip = 1)
+data_8 <- data_8[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_8[[1]] <- origin_date + as.numeric(data_8[[1]]) - 2
+dates = data_8[1]
+Businesslend <- data_8$`Commercial lending; Business sector`
+Businesslend = as.numeric(Businesslend)
+Businesslend <- log(Businesslend)
+plot_data_8 <- data.frame(Date = dates, Businesslend_Amount = Businesslend)
+Businesslend = na.omit(Businesslend)
+```
+
+
+
+```{r, warning=FALSE}
+p7 = ggplot(plot_data_7, aes(x = Title, y = Houselend_Amount)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'House Lend')
+
+
+p8 = ggplot(plot_data_8, aes(x = Title, y = Businesslend_Amount)) +
+  geom_line(color = 'blue') +
+  theme_minimal() +
+  labs(x = 'Date', y = 'Business Lend')
+
+grid.arrange(p7,p8, ncol = 2)
+
+```
+
+
+```{r,warning=FALSE}
+data_list <- list(
+  rp_price_index = rp_price_index,
+  Unemployment = Unemployment,
+  M1 = M1,
+  PPI = PPI,
+  CPI = CPI,
+  GDP = GDP,
+  Houselend = Houselend,
+  Businesslend = Businesslend
+)
+
+adf_results <- lapply(names(data_list), function(name) {
+  adf_test_result <- adf.test(data_list[[name]], k = 5)
+  data.frame(
+    Test = name,
+    Test_Statistic = adf_test_result$statistic,
+    P_Value = adf_test_result$p.value,
+    Lags = 5 
+  )
+})
+
+adf_summary <- do.call(rbind, adf_results)
+print(adf_summary)
+
+```
+
+```{r,warning=FALSE}
+adf_diff_results <- lapply(names(data_list), function(name) {
+  diff_series <- diff(data_list[[name]])
+  adf_test_result <- adf.test(diff_series, k = 5)
+  data.frame(
+    Test = paste(name, "First Difference", sep = " - "),
+    Test_Statistic = adf_test_result$statistic,
+    P_Value = adf_test_result$p.value,
+    Lags = 5
+  )
+})
+
+adf_diff_summary <- do.call(rbind, adf_diff_results)
+
+print(adf_diff_summary)
+```
+
+
 ```{r}
-#| label: tbl-irf
-#| tbl-cap: Impulse response of gdp to unanticipated tax increase by 1 pp. within two years
+par(mfrow=c(2, 4), mar=c(5, 2, 4, 2) + 0.1, mgp=c(3, 1, 0), cex.main=1, cex.axis=1, cex.lab=1)
 
-irf_gdp_tax = matrix(apply(irf[3,1,1:9,],1, mean), nrow = 1)
-rownames(irf_gdp_tax) = "change in gdp [%]"
-colnames(irf_gdp_tax) = 0:8
-knitr::kable(irf_gdp_tax, digits = 3)
+for(name in names(data_list)) {
+  ts_data <- data_list[[name]]
+  Acf(ts_data, main = name)
+}
 ```
 
-@fig-irf presents the same reaction over the horizon of five years.
+
 ```{r}
-#| label: fig-irf
-#| fig-cap: Impulse response of gdp to unanticipated tax increase by 1 pp. within five years
+par(mfrow=c(2, 4), mar=c(5, 2, 4, 2) + 0.1, mgp=c(3, 1, 0), cex.main=1, cex.axis=1, cex.lab=1)
 
-irf_median    = apply(irf[3,1,,],1, median)
-irf_hdi       = apply(irf[3,1,,],1, HDInterval::hdi, credMass = .68)
-plot(x = 0:20, y = irf_median, type = "l", bty = "n", 
-     xlab = "horizon", ylab = "change in gdp [%]",
-     ylim = range(irf_hdi))
-polygon(x = c(0:20, 20:0), y = c(irf_hdi[1,], irf_hdi[2,21:1]), col = "deepskyblue1", border = "deepskyblue1")
-lines(x = 0:20, y = irf_median, lwd = 2, col = "deepskyblue3")
+for(name in names(data_list)) {
+  ts_data <- data_list[[name]]
+  Pacf(ts_data, main = name)
+}
+
 ```
+## The Econometric Modelling
 
-## Some Hints
 
-Have a look at how to work with **RStudio** and **GitHub** at: [How to use git and GitHub with R](https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r/). 
 
-These are many different ways of how to work with references in **RStudio**: [Preview Citations](https://posit.co/blog/rstudio-1-4-preview-citations/).
 
-To make all the **R** code visible on the website change the settings in the preabmble of this document to:
-```
-execute:
-  echo: true
-```
-## References {.unnumbered}
+
+
+
+
+
+
+
+
+
+
+
+
+
