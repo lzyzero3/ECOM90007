@@ -10,7 +10,7 @@ bibliography: references.bib
 > This research project works for the assessment in ECOM90007 Macroeconometrics, which is 
 the capstone subject in Master of Applied Econometrics in University of Melbourne.
 >
-> **Keywords.** bsvars, forecasting, loan market, lending rates, shrinkage, housing market
+> **Keywords.** bsvars, forecasting, credit market, lending amount, shrinkage, housing market
 
 ```{r,message=FALSE, warning=FALSE}
 library(readabs)
@@ -154,24 +154,23 @@ Businesslend = na.omit(Businesslend)
 ```
 
 ## Introduction
-This project is focusing on the credit market in Australia. It intends to use Bayesian VAR approach in forecasting of lending amounts.
+This project is focusing on the credit market in Australia. It intends to use Bayesian VAR approach in forecasting of lending amounts in housing and business sector.
 
-**The Research Objective and Question**
-The research aims to forecast lending indicators, specifically lending amounts, in Australia. Thus, the research question is: How can the lending indicators in Australia be accurately forecasted, and what are the resulting forecasts?
+**The Research Objective and Question:**
+The research focuses on predicting lending trends in Australia, with an emphasis on the amounts of lending. Therefore, the question I want to answer is: How can we accurately predict Australia's lending indicators, and what do these forecasts reveal through BVAR?
 
-**Motivation of Research**
-For banks and related financial institutions, they need to manage the risks associated with future interest rate fluctuations. Accurate lending amount forecasting can assist them in better assessing and managing risks, thereby safeguarding their assets and maintaining financial stability.
+**Motivation of Research:**
+For banks and financial institutions, managing the interest rate associated with future fluctuations is crucial. Precise forecasts of lending amounts can aid these institutions in more effectively assessing and managing lending rates, which in turn helps in protecting their assets and ensuring financial stability.
 
 ## Data and Properties
-This section shows the data collection and their descriptive statistic including their series plotting and basic properties analyzing. 
+This section shows the data collection process and their descriptive statistic including their series plotting and basic properties through unit-root test. 
 
 ### Variables Selection 
-The selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting.
+The selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting. This research takes similar variables in macroeconomic forecasting,including the credit market.
 
-These indicators are closely linked to both loan rates and volumes. An increase in CPI and housing price indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher loan volumes and rates. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers.
+These indicators are closely linked to lending market. An increase in PPI and CPI indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher lending volumes. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers. Also, the cash target rate will influences the loan amount by affecting borrowing costs; when lowered, borrowing becomes cheaper, stimulating loan demand, The cash target rate impacts loan market volume by altering borrowing costs: lower rates stimulate loan demand, while higher rates may reduce it.
 
 Therefore, in my project, these following specific variables are used in BVAR model:
-
 
 -   $m1_t$: M1 aggregate from RBA Database
 
@@ -185,18 +184,15 @@ Therefore, in my project, these following specific variables are used in BVAR mo
 
 -   $ppi_t$: PPI aggregate from ABS Database 
 
-
-
 For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
 
 -   $houselend_t$: House lending volume aggregate from RBA 
 
 -   $businesslend_t$: Business lending volume aggregate from RBA
 
-
 ### Transformation and Properties of the Variables
 
-The cash rate target, $Cash_Rate_t$,is in percentages so it doesn't nedd to be transformed. All other variables are applied in the log-transformation and the result are below:
+The cash rate target, $cashrate_t$, is in percentages so it doesn't nedd to be transformed. All other variables are applied in the log-transformation and the result are below:
 
 -   $m1_t=\log(m1_t)$
 
@@ -219,7 +215,7 @@ Their time series plots result are below:
 #| message: false
 #| warning: false
 #| label: fig-line-plot
-#| fig-cap: "Time Series Plots fpr Variables"
+#| fig-cap: "Time Series Plots for Variables"
 p1 = ggplot(plot_data, aes(x = Title, y = Cash_Rate_Target)) +
   geom_line(color = 'blue') +
   theme_minimal() +
@@ -380,7 +376,14 @@ In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $
 where $Y$ is a $T\times n$ matrix with $Y_{T \times n} = \left( y_1, y_2, ..., y_T \right)'$. $X$ is a $T\times k$ matrix, where $k = 1 + np$ as $p$ is the lag order. It can be written as $X_{T \times k} = \left( x_1, x_2, ..., x_T \right)'$.$A$ is the $n\times k$ matrix which can be written as $A_{n \times k} = \left( a_0, A_1,A_2 ..., A_p \right)'$.
 $U_n = \left( u_1, u_2, ..., u_T \right)$ and it is a $1\times T$ matrix.  
 
+Through this model, I can make prediction by using information from historical macroeconomic data to estimate the probability distribution of future variables. The outcomes of these estimations will facilitate the interpretation of future loan market trends and the impact of various macroeconomic factors on the loan market.
 
+
+## Reference
+
+Louzis, Dimitrios P., Macroeconomic and Credit Forecasts in a Small Economy During Crisis: A Large Bayesian VAR Approach (June 1, 2014). Bank of Greece Working Paper No. 184, Available at SSRN: https://ssrn.com/abstract=4184651 or http://dx.doi.org/10.2139/ssrn.4184651
+
+Bańbura, M., Giannone, D., & Lenza, M. (2015). Conditional forecasts and scenario analysis with vector autoregressions for large cross-sections. International Journal of Forecasting, 31(3), 739-756. https://doi.org/10.1016/j.ijforecast.2014.08.013.
 
 
 
