@@ -24,18 +24,20 @@ library(lubridate)
 library(httr)
 library(readxl)
 library(gridExtra)
-response_1 <- GET("https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/residential-property-price-indexes-eight-capital-cities/dec-2021/641601.xlsx")
+response_1 <- GET("https://www.rba.gov.au/statistics/tables/xls/f01hist.xlsx?v=2024-04-03-12-05-38")
 temp_file_1 <- tempfile(fileext = ".xlsx")
 writeBin(content(response_1, "raw"), temp_file_1)
-data <- read_excel(temp_file_1, sheet = 2)
-data <- data[-(1:9), ]
+data <- read_excel(temp_file_1,sheet = 1, skip = 1 )
+data <- data[-(1:12), ]
 origin_date <- as.Date("1899-12-30")
 data[[1]] <- origin_date + as.numeric(data[[1]]) - 2
 dates = data[1]
-rp_price_index <- data$`Residential Property Price Index ;  Weighted average of eight capital cities ;`
-rp_price_index = as.numeric(rp_price_index)
-rp_price_index <- log(rp_price_index)
-plot_data <- data.frame(Date = dates, LogPriceIndex = rp_price_index)
+Cash_Rate_Target <- data$`Cash Rate Target`;
+Cash_Rate_Target = as.numeric(Cash_Rate_Target)
+plot_data <- data.frame(Date = dates, Cash_Rate_Target = Cash_Rate_Target)
+plot_data <- na.omit(plot_data[c("Title", "Cash_Rate_Target")])
+Cash_Rate_Target = na.omit(Cash_Rate_Target)
+
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -117,19 +119,51 @@ plot_data_6 <- data.frame(Date = dates, GDP_Amount = GDP)
 GDP = na.omit(GDP)
 ```
 
-# Introduction
+```{r,message=FALSE, warning=FALSE}
+response_7 = GET("https://www.rba.gov.au/statistics/tables/xls/d05hist.xlsx?v=2024-04-02-14-20-19")
+temp_file_7 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_7, "raw"), temp_file_7)
+data_7 <- read_excel(temp_file_7, sheet = 1, skip = 1)
+data_7 <- data_7[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_7[[1]] <- origin_date + as.numeric(data_7[[1]]) - 2
+dates = data_7[1]
+Houselend <- data_7$`Lending to persons; Housing; Owner-occupiers`
+Houselend = as.numeric(Houselend)
+Houselend <- log(Houselend)
+plot_data_7 <- data.frame(Date = dates, Houselend_Amount = Houselend)
+
+```
+
+```{r,message=FALSE, warning=FALSE}
+response_8 = GET("https://www.rba.gov.au/statistics/tables/xls/d05hist.xlsx?v=2024-04-02-14-20-19")
+temp_file_8 <- tempfile(fileext = ".xlsx")
+writeBin(content(response_8, "raw"), temp_file_8)
+data_8 <- read_excel(temp_file_8, sheet = 1, skip = 1)
+data_8 <- data_8[-(1:9), ]
+origin_date <- as.Date("1899-12-30")
+data_8[[1]] <- origin_date + as.numeric(data_8[[1]]) - 2
+dates = data_8[1]
+Businesslend <- data_8$`Commercial lending; Business sector`
+Businesslend = as.numeric(Businesslend)
+Businesslend <- log(Businesslend)
+plot_data_8 <- data.frame(Date = dates, Businesslend_Amount = Businesslend)
+Businesslend = na.omit(Businesslend)
+```
+
+## Introduction
 This project is focusing on the credit market in Australia. It intends to use Bayesian VAR approach in forecasting of lending amounts.
 
-## The Research Objective and Question
+**The Research Objective and Question**
 The research aims to forecast lending indicators, specifically lending amounts, in Australia. Thus, the research question is: How can the lending indicators in Australia be accurately forecasted, and what are the resulting forecasts?
 
-## Motivation of Research 
+**Motivation of Research**
 For banks and related financial institutions, they need to manage the risks associated with future interest rate fluctuations. Accurate lending amount forecasting can assist them in better assessing and managing risks, thereby safeguarding their assets and maintaining financial stability.
 
-# Data and Properties
+## Data and Properties
 This section shows the data collection and their descriptive statistic including their series plotting and basic properties analyzing. 
 
-## Variables Selection 
+### Variables Selection 
 The selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting.
 
 These indicators are closely linked to both loan rates and volumes. An increase in CPI and housing price indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher loan volumes and rates. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers.
@@ -141,18 +175,47 @@ Therefore, in my project, these following specific variables are used in BVAR mo
 
 -   $CPI_t$: CPI aggregate from ABS Database
 
--   $RPPI_t$: Residential Property Price Index aggregate from ABS Database
+-   $Cash_Rate_t$: Cash Rate Target aggregate from RBA Database
 
 -   $GDP_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
 
 -   $UNEMPLOY_t$: Unemplyemnt person aggregate from ABS Database 
 
+-   $PPI_t$: PPI aggregate from ABS Database 
+
+
+
+For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
+
+-   $House Lending_t$: House lending volume aggregate from RBA 
+
+-   $Business Lending_t$: Business lending volume aggregate from RBA
+
+
+### Transformation and Properties of the Variables
+
+The cash rate target, $Cash_Rate_t$,is in percentages so it doesn't nedd to be transformed. All other variables are applied in the log-transformation and the result are below:
+
+-   $M1_t=\log(M1_t)$
+-   $CPI_t=\log(CPI_t)$
+-   $GDP_t=\log(GDP_t)$
+-   $UNEMPLOY_t=\log(UNEMPLOY_t)$
+-   $PPI_t=\log(PPI_t)$
+-   $House Lending_t=\log(House Lending_t)$
+-   $Business Lending_t=\log(Business Lending_t)$
+
+Their time series plots result are below: 
 
 ```{r warning=FALSE}
-p1 = ggplot(plot_data, aes(x = ...1, y = LogPriceIndex)) +
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-line-plot
+#| fig-cap: "Time Series Plots fpr Variables"
+p1 = ggplot(plot_data, aes(x = Title, y = Cash_Rate_Target)) +
   geom_line(color = 'blue') +
   theme_minimal() +
-  labs(x = 'Date', y = 'RPPI')
+  labs(x = 'Date', y = 'Cash_Rate')
 
 p2 = ggplot(plot_data_2, aes(x = ...1, y = Unemployment)) +
   geom_line(color = 'blue') +
@@ -179,73 +242,32 @@ p6 = ggplot(plot_data_6, aes(x = ...1, y = GDP_Amount)) +
   theme_minimal() +
   labs(x = 'Date', y = 'GDP')
 
-grid.arrange(p1, p2, p3, p4, p5, p6, ncol = 2)
-```
-
-
-For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
-
--   $House Lending_t$: House lending volume aggregate from RBA 
-
--   $Business Lending_t$: Business lending volume aggregate from RBA
-
-
-```{r,message=FALSE, warning=FALSE}
-response_7 = GET("https://www.rba.gov.au/statistics/tables/xls/d05hist.xlsx?v=2024-04-02-14-20-19")
-temp_file_7 <- tempfile(fileext = ".xlsx")
-writeBin(content(response_7, "raw"), temp_file_7)
-data_7 <- read_excel(temp_file_7, sheet = 1, skip = 1)
-data_7 <- data_7[-(1:9), ]
-origin_date <- as.Date("1899-12-30")
-data_7[[1]] <- origin_date + as.numeric(data_7[[1]]) - 2
-dates = data_7[1]
-Houselend <- data_7$`Lending to persons; Housing; Owner-occupiers`
-Houselend = as.numeric(Houselend)
-Houselend <- log(Houselend)
-plot_data_7 <- data.frame(Date = dates, Houselend_Amount = Houselend)
-
-```
-
-
-
-```{r,message=FALSE, warning=FALSE}
-response_8 = GET("https://www.rba.gov.au/statistics/tables/xls/d05hist.xlsx?v=2024-04-02-14-20-19")
-temp_file_8 <- tempfile(fileext = ".xlsx")
-writeBin(content(response_8, "raw"), temp_file_8)
-data_8 <- read_excel(temp_file_8, sheet = 1, skip = 1)
-data_8 <- data_8[-(1:9), ]
-origin_date <- as.Date("1899-12-30")
-data_8[[1]] <- origin_date + as.numeric(data_8[[1]]) - 2
-dates = data_8[1]
-Businesslend <- data_8$`Commercial lending; Business sector`
-Businesslend = as.numeric(Businesslend)
-Businesslend <- log(Businesslend)
-plot_data_8 <- data.frame(Date = dates, Businesslend_Amount = Businesslend)
-Businesslend = na.omit(Businesslend)
-```
-
-
-
-```{r, warning=FALSE}
 p7 = ggplot(plot_data_7, aes(x = Title, y = Houselend_Amount)) +
   geom_line(color = 'blue') +
   theme_minimal() +
   labs(x = 'Date', y = 'House Lend')
-
 
 p8 = ggplot(plot_data_8, aes(x = Title, y = Businesslend_Amount)) +
   geom_line(color = 'blue') +
   theme_minimal() +
   labs(x = 'Date', y = 'Business Lend')
 
-grid.arrange(p7,p8, ncol = 2)
-
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 2)
 ```
 
+Variables' stationarity is crucial for robustness of models and prediction stability, so we need to use Augmented Dickey-Fuller (ADF) test to make sure that the variables are stationary.  
 
-```{r,warning=FALSE}
+Using the testing in levels, we 
+
+
+```{r, warning=FALSE}
+#| echo: false
+#| label: tbl-adf-level 
+#| tbl-cap: ADF test results - Levels 
+library(knitr)
+library(kableExtra)
 data_list <- list(
-  rp_price_index = rp_price_index,
+  Cash_Rate_Target = Cash_Rate_Target,
   Unemployment = Unemployment,
   M1 = M1,
   PPI = PPI,
@@ -261,16 +283,28 @@ adf_results <- lapply(names(data_list), function(name) {
     Test = name,
     Test_Statistic = adf_test_result$statistic,
     P_Value = adf_test_result$p.value,
-    Lags = 5 
+    Lags = 5
   )
 })
 
-adf_summary <- do.call(rbind, adf_results)
-print(adf_summary)
+adf_results <- do.call(rbind, adf_results)
+
+rownames(adf_results) <- NULL
+
+kable(adf_results, "html", align = 'c') %>% 
+
+kable_styling(bootstrap_options = c("striped", "hover"))
 
 ```
 
+
+
+
+
 ```{r,warning=FALSE}
+#| echo: false
+#| label: tbl-adf-firstdifference  
+#| tbl-cap: ADF test results - First Differences  
 adf_diff_results <- lapply(names(data_list), function(name) {
   diff_series <- diff(data_list[[name]])
   adf_test_result <- adf.test(diff_series, k = 5)
@@ -282,13 +316,24 @@ adf_diff_results <- lapply(names(data_list), function(name) {
   )
 })
 
-adf_diff_summary <- do.call(rbind, adf_diff_results)
 
-print(adf_diff_summary)
+adf_diff_results <- do.call(rbind, adf_diff_results)
+
+rownames(adf_diff_results) <- NULL
+
+kable(adf_diff_results, "html", align = 'c') %>% 
+
+kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-acf-plot
+#| fig-cap: "ACF Plots"
 par(mfrow=c(2, 4), mar=c(5, 2, 4, 2) + 0.1, mgp=c(3, 1, 0), cex.main=1, cex.axis=1, cex.lab=1)
 
 for(name in names(data_list)) {
@@ -299,6 +344,11 @@ for(name in names(data_list)) {
 
 
 ```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-pacf-plot
+#| fig-cap: "PACF Plots"
 par(mfrow=c(2, 4), mar=c(5, 2, 4, 2) + 0.1, mgp=c(3, 1, 0), cex.main=1, cex.axis=1, cex.lab=1)
 
 for(name in names(data_list)) {
