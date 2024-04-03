@@ -98,7 +98,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#variables-selection" id="toc-variables-selection" class="nav-link" data-scroll-target="#variables-selection">Variables Selection</a></li>
   <li><a href="#transformation-and-properties-of-the-variables" id="toc-transformation-and-properties-of-the-variables" class="nav-link" data-scroll-target="#transformation-and-properties-of-the-variables">Transformation and Properties of the Variables</a></li>
   </ul></li>
-  <li><a href="#the-econometric-modelling" id="toc-the-econometric-modelling" class="nav-link" data-scroll-target="#the-econometric-modelling">The Econometric Modelling</a></li>
+  <li><a href="#econometric-model-and-hypothesis" id="toc-econometric-model-and-hypothesis" class="nav-link" data-scroll-target="#econometric-model-and-hypothesis">Econometric Model and Hypothesis</a></li>
   </ul>
 </nav>
     </div>
@@ -171,30 +171,30 @@ ul.task-list li input[type="checkbox"] {
 <p>These indicators are closely linked to both loan rates and volumes. An increase in CPI and housing price indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher loan volumes and rates. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers.</p>
 <p>Therefore, in my project, these following specific variables are used in BVAR model:</p>
 <ul>
-<li><p><span class="math inline">\(M1_t\)</span>: M1 aggregate from RBA Database</p></li>
-<li><p><span class="math inline">\(CPI_t\)</span>: CPI aggregate from ABS Database</p></li>
-<li><p><span class="math inline">\(Cash_Rate_t\)</span>: Cash Rate Target aggregate from RBA Database</p></li>
-<li><p><span class="math inline">\(GDP_t\)</span>: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database</p></li>
-<li><p><span class="math inline">\(UNEMPLOY_t\)</span>: Unemplyemnt person aggregate from ABS Database</p></li>
-<li><p><span class="math inline">\(PPI_t\)</span>: PPI aggregate from ABS Database</p></li>
+<li><p><span class="math inline">\(m1_t\)</span>: M1 aggregate from RBA Database</p></li>
+<li><p><span class="math inline">\(cpi_t\)</span>: CPI aggregate from ABS Database</p></li>
+<li><p><span class="math inline">\(cashrate_t\)</span>: Cash Rate Target aggregate from RBA Database</p></li>
+<li><p><span class="math inline">\(gdp_t\)</span>: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database</p></li>
+<li><p><span class="math inline">\(unemploy_t\)</span>: Unemplyemnt person aggregate from ABS Database</p></li>
+<li><p><span class="math inline">\(ppi_t\)</span>: PPI aggregate from ABS Database</p></li>
 </ul>
 <p>For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:</p>
 <ul>
-<li><p><span class="math inline">\(House Lending_t\)</span>: House lending volume aggregate from RBA</p></li>
-<li><p><span class="math inline">\(Business Lending_t\)</span>: Business lending volume aggregate from RBA</p></li>
+<li><p><span class="math inline">\(houselend_t\)</span>: House lending volume aggregate from RBA</p></li>
+<li><p><span class="math inline">\(businesslend_t\)</span>: Business lending volume aggregate from RBA</p></li>
 </ul>
 </section>
 <section id="transformation-and-properties-of-the-variables" class="level3">
 <h3 class="anchored" data-anchor-id="transformation-and-properties-of-the-variables">Transformation and Properties of the Variables</h3>
 <p>The cash rate target, <span class="math inline">\(Cash_Rate_t\)</span>,is in percentages so it doesn’t nedd to be transformed. All other variables are applied in the log-transformation and the result are below:</p>
 <ul>
-<li><span class="math inline">\(M1_t=\log(M1_t)\)</span></li>
-<li><span class="math inline">\(CPI_t=\log(CPI_t)\)</span></li>
-<li><span class="math inline">\(GDP_t=\log(GDP_t)\)</span></li>
-<li><span class="math inline">\(UNEMPLOY_t=\log(UNEMPLOY_t)\)</span></li>
-<li><span class="math inline">\(PPI_t=\log(PPI_t)\)</span></li>
-<li><span class="math inline">\(House Lending_t=\log(House Lending_t)\)</span></li>
-<li><span class="math inline">\(Business Lending_t=\log(Business Lending_t)\)</span></li>
+<li><p><span class="math inline">\(m1_t=\log(m1_t)\)</span></p></li>
+<li><p><span class="math inline">\(cpi_t=\log(cpi_t)\)</span></p></li>
+<li><p><span class="math inline">\(gdp_t=\log(gdp_t)\)</span></p></li>
+<li><p><span class="math inline">\(unemploy_t=\log(unemploy_t)\)</span></p></li>
+<li><p><span class="math inline">\(ppi_t=\log(ppi_t)\)</span></p></li>
+<li><p><span class="math inline">\(houselend_t=\log(houselend_t)\)</span></p></li>
+<li><p><span class="math inline">\(businesslend_t=\log(businesslend_t)\)</span></p></li>
 </ul>
 <p>Their time series plots result are below:</p>
 <div class="cell">
@@ -208,17 +208,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p>Variables’ stationarity is crucial for robustness of models and prediction stability, so we need to use Augmented Dickey-Fuller (ADF) test to make sure that the variables are stationary.</p>
-<p>Using the testing in levels, we</p>
+<p>Using the testing in levels, we can see except the cash rate target, all other variables are non-stationary because their p-values are lower than 0.05. So we will perform the ADF test on first diiference to confirm whether the variables are stationary.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'kableExtra'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:dplyr':
-
-    group_rows</code></pre>
-</div>
 <div class="cell-output-display">
 <div id="tbl-adf-level" class="anchored">
 
@@ -286,6 +277,7 @@ Attaching package: 'kableExtra'</code></pre>
 </div>
 </div>
 </div>
+<p>In the table below. we can see it is clear that in ADF test in first difference, all variables are statistically significant in stationary.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="tbl-adf-firstdifference" class="anchored">
@@ -354,6 +346,7 @@ Attaching package: 'kableExtra'</code></pre>
 </div>
 </div>
 </div>
+<p>The unit root test’s result can also showed from the Autocorrelation Functions (ACF) and Partial Autocorrelation Functions (PACF) plots.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-acf-plot" class="quarto-figure quarto-figure-center anchored">
@@ -376,8 +369,18 @@ Attaching package: 'kableExtra'</code></pre>
 </div>
 </section>
 </section>
-<section id="the-econometric-modelling" class="level2">
-<h2 class="anchored" data-anchor-id="the-econometric-modelling">The Econometric Modelling</h2>
+<section id="econometric-model-and-hypothesis" class="level2">
+<h2 class="anchored" data-anchor-id="econometric-model-and-hypothesis">Econometric Model and Hypothesis</h2>
+<p>To forecast the loan amount in housing and business sector, the Bayesian VAR model will be used in this project. Based on the credit forecast in previous research (Louzis, 2014), we simplify this project’s notation of BVAR with <span class="math inline">\(p\)</span> lags below:</p>
+<span class="math display">\[\begin{align}
+   y_t &amp;= \mu_0 + A_1y_{t-1}+\dots+A_py_{t-p}+u_t
+\end{align}\]</span>
+<p>In this model, <span class="math inline">\(y_t=[m1_t\)</span> , <span class="math inline">\(cpi_t\)</span> , <span class="math inline">\(cashrate_t\)</span> , <span class="math inline">\(gdp_t\)</span> , <span class="math inline">\(unemploy_t\)</span> , <span class="math inline">\(ppi_t\)</span> , <span class="math inline">\(houselend_t\)</span> , <span class="math inline">\(businesslend_t]'\)</span> and it includes the eight variables we list above. The variables we used in forecasting is <span class="math inline">\(houselend_t\)</span> and <span class="math inline">\(businesslend_t\)</span>. The <span class="math inline">\(u_t\)</span> means the error term, which is assumed to be <span class="math inline">\(u_t|Y_{t-1}\sim\;iid(\textbf{0}_N,I_N)\)</span>, and in this following model <span class="math inline">\(N=8\)</span>. <span class="math inline">\(A_l\)</span> with l = 1, 2,…,p is an <span class="math inline">\(n\times n\)</span> coefficient matrix for each lag. We can re-write it into matrix form:</p>
+<span class="math display">\[\begin{align}
+  Y &amp;= XA + U \\
+  U &amp;\sim MN(0, \Sigma \otimes I_T)
+\end{align}\]</span>
+<p>where <span class="math inline">\(Y\)</span> is a <span class="math inline">\(T\times n\)</span> matrix with <span class="math inline">\(Y_{T \times n} = \left( y_1, y_2, ..., y_T \right)'\)</span>. <span class="math inline">\(X\)</span> is a <span class="math inline">\(T\times k\)</span> matrix, where <span class="math inline">\(k = 1 + np\)</span> as <span class="math inline">\(p\)</span> is the lag order. It can be written as <span class="math inline">\(X_{T \times k} = \left( x_1, x_2, ..., x_T \right)'\)</span>.<span class="math inline">\(A\)</span> is the <span class="math inline">\(n\times k\)</span> matrix which can be written as <span class="math inline">\(A_{n \times k} = \left( a_0, A_1,A_2 ..., A_p \right)'\)</span>. <span class="math inline">\(U_n = \left( u_1, u_2, ..., u_T \right)\)</span> and it is a <span class="math inline">\(1\times T\)</span> matrix.</p>
 
 
 </section>

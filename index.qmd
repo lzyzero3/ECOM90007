@@ -24,6 +24,8 @@ library(lubridate)
 library(httr)
 library(readxl)
 library(gridExtra)
+library(knitr)
+library(kableExtra)
 response_1 <- GET("https://www.rba.gov.au/statistics/tables/xls/f01hist.xlsx?v=2024-04-03-12-05-38")
 temp_file_1 <- tempfile(fileext = ".xlsx")
 writeBin(content(response_1, "raw"), temp_file_1)
@@ -171,38 +173,44 @@ These indicators are closely linked to both loan rates and volumes. An increase 
 Therefore, in my project, these following specific variables are used in BVAR model:
 
 
--   $M1_t$: M1 aggregate from RBA Database
+-   $m1_t$: M1 aggregate from RBA Database
 
--   $CPI_t$: CPI aggregate from ABS Database
+-   $cpi_t$: CPI aggregate from ABS Database
 
--   $Cash_Rate_t$: Cash Rate Target aggregate from RBA Database
+-   $cashrate_t$: Cash Rate Target aggregate from RBA Database
 
--   $GDP_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
+-   $gdp_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
 
--   $UNEMPLOY_t$: Unemplyemnt person aggregate from ABS Database 
+-   $unemploy_t$: Unemplyemnt person aggregate from ABS Database 
 
--   $PPI_t$: PPI aggregate from ABS Database 
+-   $ppi_t$: PPI aggregate from ABS Database 
 
 
 
 For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
 
--   $House Lending_t$: House lending volume aggregate from RBA 
+-   $houselend_t$: House lending volume aggregate from RBA 
 
--   $Business Lending_t$: Business lending volume aggregate from RBA
+-   $businesslend_t$: Business lending volume aggregate from RBA
 
 
 ### Transformation and Properties of the Variables
 
 The cash rate target, $Cash_Rate_t$,is in percentages so it doesn't nedd to be transformed. All other variables are applied in the log-transformation and the result are below:
 
--   $M1_t=\log(M1_t)$
--   $CPI_t=\log(CPI_t)$
--   $GDP_t=\log(GDP_t)$
--   $UNEMPLOY_t=\log(UNEMPLOY_t)$
--   $PPI_t=\log(PPI_t)$
--   $House Lending_t=\log(House Lending_t)$
--   $Business Lending_t=\log(Business Lending_t)$
+-   $m1_t=\log(m1_t)$
+
+-   $cpi_t=\log(cpi_t)$
+
+-   $gdp_t=\log(gdp_t)$
+
+-   $unemploy_t=\log(unemploy_t)$
+
+-   $ppi_t=\log(ppi_t)$
+
+-   $houselend_t=\log(houselend_t)$
+
+-   $businesslend_t=\log(businesslend_t)$
 
 Their time series plots result are below: 
 
@@ -257,15 +265,14 @@ grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 2)
 
 Variables' stationarity is crucial for robustness of models and prediction stability, so we need to use Augmented Dickey-Fuller (ADF) test to make sure that the variables are stationary.  
 
-Using the testing in levels, we 
+Using the testing in levels, we can see except the cash rate target, all other variables are non-stationary because their p-values are lower than 0.05. So we 
+will perform the ADF test on first diiference to confirm whether the variables are stationary. 
 
 
 ```{r, warning=FALSE}
 #| echo: false
 #| label: tbl-adf-level 
 #| tbl-cap: ADF test results - Levels 
-library(knitr)
-library(kableExtra)
 data_list <- list(
   Cash_Rate_Target = Cash_Rate_Target,
   Unemployment = Unemployment,
@@ -288,17 +295,13 @@ adf_results <- lapply(names(data_list), function(name) {
 })
 
 adf_results <- do.call(rbind, adf_results)
-
 rownames(adf_results) <- NULL
-
 kable(adf_results, "html", align = 'c') %>% 
-
 kable_styling(bootstrap_options = c("striped", "hover"))
 
 ```
 
-
-
+In the table below. we can see it is clear that in ADF test in first difference, all variables are statistically significant in stationary. 
 
 
 ```{r,warning=FALSE}
@@ -316,16 +319,14 @@ adf_diff_results <- lapply(names(data_list), function(name) {
   )
 })
 
-
 adf_diff_results <- do.call(rbind, adf_diff_results)
-
 rownames(adf_diff_results) <- NULL
-
 kable(adf_diff_results, "html", align = 'c') %>% 
-
 kable_styling(bootstrap_options = c("striped", "hover"))
 
 ```
+
+The unit root test's result can also showed from the  Autocorrelation Functions (ACF) and Partial Autocorrelation Functions (PACF) plots.  
 
 
 ```{r}
@@ -357,13 +358,27 @@ for(name in names(data_list)) {
 }
 
 ```
-## The Econometric Modelling
+## Econometric Model and Hypothesis
 
+To forecast the loan amount in housing and business sector, the Bayesian VAR model will be used in this project. Based on the credit forecast in previous research (Louzis, 2014), we simplify this project's notation of BVAR with $p$ lags below:
 
+```{=tex}
+\begin{align}
+   y_t &= \mu_0 + A_1y_{t-1}+\dots+A_py_{t-p}+u_t
+\end{align}
+```
 
+In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $ppi_t$ , $houselend_t$ , $businesslend_t]'$ and it includes the eight variables we list above. The variables we used in forecasting is $houselend_t$ and $businesslend_t$. The $u_t$ means the error term, which is assumed to be $u_t|Y_{t-1}\sim\;iid(\textbf{0}_N,I_N)$, and in this following model $N=8$. $A_l$ with l = 1, 2,...,p is an $n\times n$ coefficient matrix for each lag. We can re-write it into matrix form:
 
+```{=tex}
+\begin{align}
+  Y &= XA + U \\
+  U &\sim MN(0, \Sigma \otimes I_T)
+\end{align}
+```
 
-
+where $Y$ is a $T\times n$ matrix with $Y_{T \times n} = \left( y_1, y_2, ..., y_T \right)'$. $X$ is a $T\times k$ matrix, where $k = 1 + np$ as $p$ is the lag order. It can be written as $X_{T \times k} = \left( x_1, x_2, ..., x_T \right)'$.$A$ is the $n\times k$ matrix which can be written as $A_{n \times k} = \left( a_0, A_1,A_2 ..., A_p \right)'$.
+$U_n = \left( u_1, u_2, ..., u_T \right)$ and it is a $1\times T$ matrix.  
 
 
 
