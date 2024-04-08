@@ -8,7 +8,7 @@ execute:
 bibliography: references.bib
 ---
 
-> This research project works for the assessment in ECOM90007 Macroeconometrics, which is the capstone subject in Master of Applied Econometrics in University of Melbourne.
+> Abstract: This paper aims to forecast the Australian lending amounts using a Bayesian Var approach. Briefly introduce the research method and and purpose.
 >
 > **Keywords.** bsvars, forecasting, credit market, lending amount, shrinkage, housing market
 
