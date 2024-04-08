@@ -153,6 +153,17 @@ plot_data_8 <- data.frame(Date = dates, Businesslend_Amount = Businesslend)
 Businesslend = na.omit(Businesslend)
 ```
 
+```{r,message=FALSE, warning=FALSE}
+m1_n = read_rba(series_id = "DMAM1S") 
+m1_n <- m1_n %>% filter(date > as.Date("1899-12-31"))
+
+m1_n <- m1_n %>%
+  mutate(Quarter = paste(year(date), quarter(date), sep = "Q")) %>%
+  group_by(Quarter) %>%
+  summarize(Average = mean(value, na.rm = TRUE))
+
+```
+
 ## Introduction
 
 This project is focusing on the credit market in Australia. It intends to use Bayesian VAR approach in forecasting of lending amounts in housing and business sector.
