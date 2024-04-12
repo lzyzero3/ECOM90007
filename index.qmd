@@ -7,8 +7,8 @@ execute:
   
 bibliography: references.bib
 ---
-> This research project works for the assessment in ECOM90007 Macroeconometrics, which is 
-the capstone subject in Master of Applied Econometrics in University of Melbourne.
+
+> Abstract: This paper aims to forecast the Australian lending amounts using a Bayesian Var approach. Briefly introduce the research method and and purpose.
 >
 > **Keywords.** bsvars, forecasting, credit market, lending amount, shrinkage, housing market
 
@@ -153,19 +153,31 @@ plot_data_8 <- data.frame(Date = dates, Businesslend_Amount = Businesslend)
 Businesslend = na.omit(Businesslend)
 ```
 
+```{r,message=FALSE, warning=FALSE}
+m1_n = read_rba(series_id = "DMAM1S") 
+m1_n <- m1_n %>% filter(date > as.Date("1899-12-31"))
+
+m1_n <- m1_n %>%
+  mutate(Quarter = paste(year(date), quarter(date), sep = "Q")) %>%
+  group_by(Quarter) %>%
+  summarize(Average = mean(value, na.rm = TRUE))
+
+```
+
 ## Introduction
+
 This project is focusing on the credit market in Australia. It intends to use Bayesian VAR approach in forecasting of lending amounts in housing and business sector.
 
-**The Research Objective and Question:**
-The research focuses on predicting lending trends in Australia, with an emphasis on the amounts of lending. Therefore, the question I want to answer is: How can we accurately predict Australia's lending indicators, and what do these forecasts reveal through BVAR?
+**The Research Objective and Question:** The research focuses on predicting lending trends in Australia, with an emphasis on the amounts of lending. Therefore, the question I want to answer is: How can we accurately predict Australia's lending indicators, and what do these forecasts reveal through BVAR?
 
-**Motivation of Research:**
-For banks and financial institutions, managing the interest rate associated with future fluctuations is crucial. Precise forecasts of lending amounts can aid these institutions in more effectively assessing and managing lending rates, which in turn helps in protecting their assets and ensuring financial stability.
+**Motivation of Research:** For banks and financial institutions, managing the interest rate associated with future fluctuations is crucial. Precise forecasts of lending amounts can aid these institutions in more effectively assessing and managing lending rates, which in turn helps in protecting their assets and ensuring financial stability.
 
 ## Data and Properties
-This section shows the data collection process and their descriptive statistic including their series plotting and basic properties through unit-root test. 
 
-### Variables Selection 
+This section shows the data collection process and their descriptive statistic including their series plotting and basic properties through unit-root test.
+
+### Variables Selection
+
 The selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting. This research takes similar variables in macroeconomic forecasting,including the credit market.
 
 These indicators are closely linked to lending market. An increase in PPI and CPI indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher lending volumes. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers. Also, the cash target rate will influences the loan amount by affecting borrowing costs; when lowered, borrowing becomes cheaper, stimulating loan demand, The cash target rate impacts loan market volume by altering borrowing costs: lower rates stimulate loan demand, while higher rates may reduce it.
@@ -180,13 +192,13 @@ Therefore, in my project, these following specific variables are used in BVAR mo
 
 -   $gdp_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
 
--   $unemploy_t$: Unemplyemnt person aggregate from ABS Database 
+-   $unemploy_t$: Unemplyemnt person aggregate from ABS Database
 
--   $ppi_t$: PPI aggregate from ABS Database 
+-   $ppi_t$: PPI aggregate from ABS Database
 
 For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
 
--   $houselend_t$: House lending volume aggregate from RBA 
+-   $houselend_t$: House lending volume aggregate from RBA
 
 -   $businesslend_t$: Business lending volume aggregate from RBA
 
@@ -208,7 +220,7 @@ The cash rate target, $cashrate_t$, is in percentages so it doesn't nedd to be t
 
 -   $businesslend_t=\log(businesslend_t)$
 
-Their time series plots result are below: 
+Their time series plots result are below:
 
 ```{r warning=FALSE}
 #| echo: false
@@ -259,11 +271,9 @@ p8 = ggplot(plot_data_8, aes(x = Title, y = Businesslend_Amount)) +
 grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 2)
 ```
 
-Variables' stationarity is crucial for robustness of models and prediction stability, so we need to use Augmented Dickey-Fuller (ADF) test to make sure that the variables are stationary.  
+Variables' stationarity is crucial for robustness of models and prediction stability, so we need to use Augmented Dickey-Fuller (ADF) test to make sure that the variables are stationary.
 
-Using the testing in levels, we can see except the cash rate target, all other variables are non-stationary because their p-values are lower than 0.05. So we 
-will perform the ADF test on first diiference to confirm whether the variables are stationary. 
-
+Using the testing in levels, we can see except the cash rate target, all other variables are non-stationary because their p-values are lower than 0.05. So we will perform the ADF test on first diiference to confirm whether the variables are stationary.
 
 ```{r, warning=FALSE}
 #| echo: false
@@ -297,8 +307,7 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 
 ```
 
-In the table below. we can see it is clear that in ADF test in first difference, all variables are statistically significant in stationary. 
-
+In the table below. we can see it is clear that in ADF test in first difference, all variables are statistically significant in stationary.
 
 ```{r,warning=FALSE}
 #| echo: false
@@ -322,8 +331,7 @@ kable_styling(bootstrap_options = c("striped", "hover"))
 
 ```
 
-The unit root test's result can also showed from the  Autocorrelation Functions (ACF) and Partial Autocorrelation Functions (PACF) plots.  
-
+The unit root test's result can also showed from the Autocorrelation Functions (ACF) and Partial Autocorrelation Functions (PACF) plots.
 
 ```{r}
 #| echo: false
@@ -339,7 +347,6 @@ for(name in names(data_list)) {
 }
 ```
 
-
 ```{r}
 #| echo: false
 #| message: false
@@ -354,6 +361,7 @@ for(name in names(data_list)) {
 }
 
 ```
+
 ## Econometric Model and Hypothesis
 
 To forecast the loan amount in housing and business sector, the Bayesian VAR model will be used in this project. Based on the credit forecast in previous research (Louzis, 2014), we simplify this project's notation of BVAR with $p$ lags below:
@@ -363,8 +371,7 @@ To forecast the loan amount in housing and business sector, the Bayesian VAR mod
    y_t &= \mu_0 + A_1y_{t-1}+\dots+A_py_{t-p}+u_t
 \end{align}
 ```
-
-In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $ppi_t$ , $houselend_t$ , $businesslend_t]'$ and it includes the eight variables we list above. The variables we used in forecasting is $houselend_t$ and $businesslend_t$. The $u_t$ means the error term, which is assumed to be $u_t|Y_{t-1}\sim\;iid(\textbf{0}_N,I_N)$, and in this following model $N=8$. $A_l$ with l = 1, 2,...,p is an $n\times n$ coefficient matrix for each lag. We can re-write it into matrix form:
+In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $ppi_t$ , $houselend_t$ , $businesslend_t]'$ and it includes the eight variables we list above. The variables we used in forecasting is $houselend_t$ and $businesslend_t$. The $u_t$ means the error term, which is assumed to be $u_t|Y_{t-1}\sim\;iidN(\textbf{0}_N,I_N)$, and in this following model $N=8$. $A_l$ with l = 1, 2,...,p is an $N\times N$ coefficient matrix for each lag. We can re-write it into matrix form:
 
 ```{=tex}
 \begin{align}
@@ -372,24 +379,12 @@ In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $
   U &\sim MN(0, \Sigma \otimes I_T)
 \end{align}
 ```
-
-where $Y$ is a $T\times n$ matrix with $Y_{T \times n} = \left( y_1, y_2, ..., y_T \right)'$. $X$ is a $T\times k$ matrix, where $k = 1 + np$ as $p$ is the lag order. It can be written as $X_{T \times k} = \left( x_1, x_2, ..., x_T \right)'$.$A$ is the $n\times k$ matrix which can be written as $A_{n \times k} = \left( a_0, A_1,A_2 ..., A_p \right)'$.
-$U_n = \left( u_1, u_2, ..., u_T \right)$ and it is a $1\times T$ matrix.  
+where $Y$ is a $T\times N$ matrix with $Y_{T \times N} = \left( y_1', y_2', ..., y_T' \right)'$. $X$ is a $T\times k$ matrix, where $k = 1 + Np$ as $p$ is the lag order. It can be written as $X_{T \times k} = \left( x_1', x_2', ..., x_T' \right)'$ and each $x_t' = (1, y_{t-1}',y_{t-2}',\dots, y_{t-p}')$ which is a $1 \times k$ matrix.$A$ is the $k\times N$ matrix which can be written as $A_{k \times N} = \left( a_0, A_1,A_2 ..., A_p \right)'$. $U_{T\times N} = \left( u_1', u_2', ..., u_T' \right)$ and it is a $T \times N$ matrix.
 
 Through this model, I can make prediction by using information from historical macroeconomic data to estimate the probability distribution of future variables. The outcomes of these estimations will facilitate the interpretation of future loan market trends and the impact of various macroeconomic factors on the loan market.
-
 
 ## Reference
 
 Louzis, Dimitrios P., Macroeconomic and Credit Forecasts in a Small Economy During Crisis: A Large Bayesian VAR Approach (June 1, 2014). Bank of Greece Working Paper No. 184, Available at SSRN: https://ssrn.com/abstract=4184651 or http://dx.doi.org/10.2139/ssrn.4184651
 
 Bańbura, M., Giannone, D., & Lenza, M. (2015). Conditional forecasts and scenario analysis with vector autoregressions for large cross-sections. International Journal of Forecasting, 31(3), 739-756. https://doi.org/10.1016/j.ijforecast.2014.08.013.
-
-
-
-
-
-
-
-
-
