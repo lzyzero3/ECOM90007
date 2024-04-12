@@ -130,9 +130,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 <blockquote class="blockquote">
-<p>This research project works for the assessment in ECOM90007 Macroeconometrics, which is the capstone subject in Master of Applied Econometrics in University of Melbourne.</p>
+<p>Abstract: This paper aims to forecast the Australian lending amounts using a Bayesian Var approach. Briefly introduce the research method and and purpose.</p>
+</blockquote>
+<blockquote class="blockquote">
 <p><strong>Keywords.</strong> bsvars, forecasting, credit market, lending amount, shrinkage, housing market</p>
 </blockquote>
+<div class="cell">
+
+</div>
 <div class="cell">
 
 </div>
@@ -376,12 +381,12 @@ ul.task-list li input[type="checkbox"] {
 <span class="math display">\[\begin{align}
    y_t &amp;= \mu_0 + A_1y_{t-1}+\dots+A_py_{t-p}+u_t
 \end{align}\]</span>
-<p>In this model, <span class="math inline">\(y_t=[m1_t\)</span> , <span class="math inline">\(cpi_t\)</span> , <span class="math inline">\(cashrate_t\)</span> , <span class="math inline">\(gdp_t\)</span> , <span class="math inline">\(unemploy_t\)</span> , <span class="math inline">\(ppi_t\)</span> , <span class="math inline">\(houselend_t\)</span> , <span class="math inline">\(businesslend_t]'\)</span> and it includes the eight variables we list above. The variables we used in forecasting is <span class="math inline">\(houselend_t\)</span> and <span class="math inline">\(businesslend_t\)</span>. The <span class="math inline">\(u_t\)</span> means the error term, which is assumed to be <span class="math inline">\(u_t|Y_{t-1}\sim\;iid(\textbf{0}_N,I_N)\)</span>, and in this following model <span class="math inline">\(N=8\)</span>. <span class="math inline">\(A_l\)</span> with l = 1, 2,…,p is an <span class="math inline">\(n\times n\)</span> coefficient matrix for each lag. We can re-write it into matrix form:</p>
+<p>In this model, <span class="math inline">\(y_t=[m1_t\)</span> , <span class="math inline">\(cpi_t\)</span> , <span class="math inline">\(cashrate_t\)</span> , <span class="math inline">\(gdp_t\)</span> , <span class="math inline">\(unemploy_t\)</span> , <span class="math inline">\(ppi_t\)</span> , <span class="math inline">\(houselend_t\)</span> , <span class="math inline">\(businesslend_t]'\)</span> and it includes the eight variables we list above. The variables we used in forecasting is <span class="math inline">\(houselend_t\)</span> and <span class="math inline">\(businesslend_t\)</span>. The <span class="math inline">\(u_t\)</span> means the error term, which is assumed to be <span class="math inline">\(u_t|Y_{t-1}\sim\;iidN(\textbf{0}_N,I_N)\)</span>, and in this following model <span class="math inline">\(N=8\)</span>. <span class="math inline">\(A_l\)</span> with l = 1, 2,…,p is an <span class="math inline">\(N\times N\)</span> coefficient matrix for each lag. We can re-write it into matrix form:</p>
 <span class="math display">\[\begin{align}
   Y &amp;= XA + U \\
   U &amp;\sim MN(0, \Sigma \otimes I_T)
 \end{align}\]</span>
-<p>where <span class="math inline">\(Y\)</span> is a <span class="math inline">\(T\times n\)</span> matrix with <span class="math inline">\(Y_{T \times n} = \left( y_1, y_2, ..., y_T \right)'\)</span>. <span class="math inline">\(X\)</span> is a <span class="math inline">\(T\times k\)</span> matrix, where <span class="math inline">\(k = 1 + np\)</span> as <span class="math inline">\(p\)</span> is the lag order. It can be written as <span class="math inline">\(X_{T \times k} = \left( x_1, x_2, ..., x_T \right)'\)</span>.<span class="math inline">\(A\)</span> is the <span class="math inline">\(n\times k\)</span> matrix which can be written as <span class="math inline">\(A_{n \times k} = \left( a_0, A_1,A_2 ..., A_p \right)'\)</span>. <span class="math inline">\(U_n = \left( u_1, u_2, ..., u_T \right)\)</span> and it is a <span class="math inline">\(1\times T\)</span> matrix.</p>
+<p>where <span class="math inline">\(Y\)</span> is a <span class="math inline">\(T\times N\)</span> matrix with <span class="math inline">\(Y_{T \times N} = \left( y_1', y_2', ..., y_T' \right)'\)</span>. <span class="math inline">\(X\)</span> is a <span class="math inline">\(T\times k\)</span> matrix, where <span class="math inline">\(k = 1 + Np\)</span> as <span class="math inline">\(p\)</span> is the lag order. It can be written as <span class="math inline">\(X_{T \times k} = \left( x_1', x_2', ..., x_T' \right)'\)</span> and each <span class="math inline">\(x_t' = (1, y_{t-1}',y_{t-2}',\dots, y_{t-p}')\)</span> which is a <span class="math inline">\(1 \times k\)</span> matrix.<span class="math inline">\(A\)</span> is the <span class="math inline">\(k\times N\)</span> matrix which can be written as <span class="math inline">\(A_{k \times N} = \left( a_0, A_1,A_2 ..., A_p \right)'\)</span>. <span class="math inline">\(U_{T\times N} = \left( u_1', u_2', ..., u_T' \right)\)</span> and it is a <span class="math inline">\(T \times N\)</span> matrix.</p>
 <p>Through this model, I can make prediction by using information from historical macroeconomic data to estimate the probability distribution of future variables. The outcomes of these estimations will facilitate the interpretation of future loan market trends and the impact of various macroeconomic factors on the loan market.</p>
 </section>
 <section id="reference" class="level2">

@@ -9,7 +9,7 @@ bibliography: references.bib
 ---
 
 > Abstract: This paper aims to forecast the Australian lending amounts using a Bayesian Var approach. Briefly introduce the research method and and purpose.
->
+
 > **Keywords.** bsvars, forecasting, credit market, lending amount, shrinkage, housing market
 
 ```{r,message=FALSE, warning=FALSE}
@@ -379,6 +379,7 @@ In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $
   U &\sim MN(0, \Sigma \otimes I_T)
 \end{align}
 ```
+
 where $Y$ is a $T\times N$ matrix with $Y_{T \times N} = \left( y_1', y_2', ..., y_T' \right)'$. $X$ is a $T\times k$ matrix, where $k = 1 + Np$ as $p$ is the lag order. It can be written as $X_{T \times k} = \left( x_1', x_2', ..., x_T' \right)'$ and each $x_t' = (1, y_{t-1}',y_{t-2}',\dots, y_{t-p}')$ which is a $1 \times k$ matrix.$A$ is the $k\times N$ matrix which can be written as $A_{k \times N} = \left( a_0, A_1,A_2 ..., A_p \right)'$. $U_{T\times N} = \left( u_1', u_2', ..., u_T' \right)$ and it is a $T \times N$ matrix.
 
 Through this model, I can make prediction by using information from historical macroeconomic data to estimate the probability distribution of future variables. The outcomes of these estimations will facilitate the interpretation of future loan market trends and the impact of various macroeconomic factors on the loan market.
