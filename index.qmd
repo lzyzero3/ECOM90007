@@ -192,9 +192,9 @@ Therefore, in my project, these following specific variables are used in BVAR mo
 
 -   $gdp_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
 
--   $unemploy_t$: Unemplyemnt person aggregate from ABS Database
+-   $housecreditrate_t$: average lending credit rate for housing loans from RBA Database
 
--   $ppi_t$: PPI aggregate from ABS Database
+-   $commercialcredutrate_t$: average lending rate for commercial investment
 
 For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
 
