@@ -212,7 +212,7 @@ The cash rate target, $cashrate_t$, is in percentages so it doesn't nedd to be t
 
 -   $gdp_t=\log(gdp_t)$
 
--   $unemploy_t=\log(unemploy_t)$
+-   $unemploy_t=unemploy_t$
 
 -   $ppi_t=\log(ppi_t)$
 
