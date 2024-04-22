@@ -12,9 +12,11 @@ bibliography: references.bib
 
 > **Keywords.** bsvars, forecasting, credit market, lending amount, shrinkage, housing market
 
+
 ```{r,message=FALSE, warning=FALSE}
 library(readabs)
 library(readrba)
+library(zoo)
 library(tseries)
 library(tidyr)
 library(dplyr)
@@ -37,9 +39,10 @@ dates = data[1]
 Cash_Rate_Target <- data$`Cash Rate Target`;
 Cash_Rate_Target = as.numeric(Cash_Rate_Target)
 plot_data <- data.frame(Date = dates, Cash_Rate_Target = Cash_Rate_Target)
-plot_data <- na.omit(plot_data[c("Title", "Cash_Rate_Target")])
 Cash_Rate_Target = na.omit(Cash_Rate_Target)
-
+plot_data <- na.omit(plot_data[c("Title", "Cash_Rate_Target")])
+plot_data <- plot_data %>% 
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -54,8 +57,9 @@ dates = data_2[1]
 Unemployment <- data_2$`Unemployed total ;  Persons ;`
 Unemployment = as.numeric(Unemployment)
 Unemployment <- log(Unemployment)
-plot_data_2 <- data.frame(Date = dates, LogPriceIndex = Unemployment)
-
+plot_data_2 <- data.frame(Date = dates, Unemployment = Unemployment)
+plot_data_2 <- plot_data_2 %>% 
+  filter(...1 >= as.Date("1991-01-01") & ...1  <= as.Date("2022-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -73,6 +77,8 @@ M1 <- log(M1)
 plot_data_3 <- data.frame(Date = dates, M1_Amount = M1)
 plot_data_3 <- na.omit(plot_data_3[c("Title", "M1_Amount")])
 M1 = na.omit(M1)
+plot_data_3 <- plot_data_3 %>% 
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -103,6 +109,25 @@ CPI <- data_5$`Index Numbers ;  All groups CPI ;  Australia ;`
 CPI = as.numeric(CPI)
 CPI <- log(CPI)
 plot_data_5 <- data.frame(Date = dates, CPI_Amount = CPI)
+plot_data_5 <- plot_data_5 %>% 
+  filter(...1 >= as.Date("1991-01-01") & ...1 <= as.Date("2023-3-31"))
+plot_data_5$`...1` <- as.Date(plot_data_5$`...1`, "%m %Y-%d")
+plot_data_5$...1 <- as.Date(cut(plot_data_5$...1, breaks = "quarter"), format = "%Y-%m-%d") - 1
+
+full_seq <- seq(from = as.Date(sprintf("%s-01-01", min(format(plot_data_5$...1, "%Y")))), 
+                to = as.Date(sprintf("%s-12-01", max(format(plot_data_5$...1, "%Y")))), 
+                by = "month")
+
+zoo_data <- zoo(plot_data_5$CPI_Amount, plot_data_5$...1)
+
+zoo_full <- zoo(order.by = full_seq)
+zoo_merged <- merge(zoo_data, zoo_full, all = TRUE)
+
+zoo_interpolated <- na.approx(zoo_merged)
+plot_data_monthly <- data.frame(Date = index(zoo_interpolated), CPI_Amount = coredata(zoo_interpolated))
+plot_data_5 <- plot_data_monthly[!duplicated(format(plot_data_monthly$Date, "%Y-%m")), ]
+plot_data_5 <- plot_data_5 %>% 
+  filter(Date >= as.Date("1991-01-01") & Date <= as.Date("2022-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -114,11 +139,29 @@ data_6 <- data_6[-(1:9), ]
 origin_date <- as.Date("1899-12-30")
 data_6[[1]] <- origin_date + as.numeric(data_6[[1]]) - 2
 dates = data_6[1]
-GDP <- data_6$`GROSS DOMESTIC PRODUCT ;...42`
+GDP <- data_6$`GROSS DOMESTIC PRODUCT ;...124`
 GDP = as.numeric(GDP)
 GDP <- log(GDP)
 plot_data_6 <- data.frame(Date = dates, GDP_Amount = GDP)
-GDP = na.omit(GDP)
+plot_data_6 <- plot_data_6 %>% 
+  filter(...1 >= as.Date("1991-01-01") & ...1 <= as.Date("2023-3-31"))
+plot_data_6$`...1` <- as.Date(plot_data_6$`...1`, "%m %Y-%d")
+plot_data_6$...1 <- as.Date(cut(plot_data_6$...1, breaks = "quarter"), format = "%Y-%m-%d") - 1
+
+full_seq <- seq(from = as.Date(sprintf("%s-01-01", min(format(plot_data_6$...1, "%Y")))), 
+                to = as.Date(sprintf("%s-12-01", max(format(plot_data_6$...1, "%Y")))), 
+                by = "month")
+
+zoo_data <- zoo(plot_data_6$GDP_Amount, plot_data_6$...1)
+
+zoo_full <- zoo(order.by = full_seq)
+zoo_merged <- merge(zoo_data, zoo_full, all = TRUE)
+
+zoo_interpolated <- na.approx(zoo_merged)
+plot_data_monthly <- data.frame(Date = index(zoo_interpolated), GDP_Amount = coredata(zoo_interpolated))
+plot_data_6 <- plot_data_monthly[!duplicated(format(plot_data_monthly$Date, "%Y-%m")), ]
+plot_data_6 <- plot_data_6 %>% 
+  filter(Date >= as.Date("1991-01-01") & Date <= as.Date("2022-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -134,7 +177,8 @@ Houselend <- data_7$`Lending to persons; Housing; Owner-occupiers`
 Houselend = as.numeric(Houselend)
 Houselend <- log(Houselend)
 plot_data_7 <- data.frame(Date = dates, Houselend_Amount = Houselend)
-
+plot_data_7 <- plot_data_7 %>% 
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -151,6 +195,8 @@ Businesslend = as.numeric(Businesslend)
 Businesslend <- log(Businesslend)
 plot_data_8 <- data.frame(Date = dates, Businesslend_Amount = Businesslend)
 Businesslend = na.omit(Businesslend)
+plot_data_8 <- plot_data_8 %>% 
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -228,6 +274,7 @@ Their time series plots result are below:
 #| warning: false
 #| label: fig-line-plot
 #| fig-cap: "Time Series Plots for Variables"
+
 p1 = ggplot(plot_data, aes(x = Title, y = Cash_Rate_Target)) +
   geom_line(color = 'blue') +
   theme_minimal() +
@@ -248,12 +295,12 @@ p4 = ggplot(plot_data_4, aes(x = ...1, y = PPI)) +
   theme_minimal() +
   labs(x = 'Date', y = 'PPI')
 
-p5 = ggplot(plot_data_5, aes(x = ...1, y = CPI_Amount)) +
+p5 = ggplot(plot_data_5, aes(x = Date, y = CPI_Amount)) +
   geom_line(color = 'blue') +
   theme_minimal() +
   labs(x = 'Date', y = 'CPI')
 
-p6 = ggplot(plot_data_6, aes(x = ...1, y = GDP_Amount)) +
+p6 = ggplot(plot_data_6, aes(x = Date, y = GDP_Amount)) +
   geom_line(color = 'blue') +
   theme_minimal() +
   labs(x = 'Date', y = 'GDP')
@@ -383,6 +430,15 @@ In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $
 where $Y$ is a $T\times N$ matrix with $Y_{T \times N} = \left( y_1', y_2', ..., y_T' \right)'$. $X$ is a $T\times k$ matrix, where $k = 1 + Np$ as $p$ is the lag order. It can be written as $X_{T \times k} = \left( x_1', x_2', ..., x_T' \right)'$ and each $x_t' = (1, y_{t-1}',y_{t-2}',\dots, y_{t-p}')$ which is a $1 \times k$ matrix.$A$ is the $k\times N$ matrix which can be written as $A_{k \times N} = \left( a_0, A_1,A_2 ..., A_p \right)'$. $U_{T\times N} = \left( u_1', u_2', ..., u_T' \right)$ and it is a $T \times N$ matrix.
 
 Through this model, I can make prediction by using information from historical macroeconomic data to estimate the probability distribution of future variables. The outcomes of these estimations will facilitate the interpretation of future loan market trends and the impact of various macroeconomic factors on the loan market.
+
+
+
+
+
+
+
+
+
 
 ## Reference
 
