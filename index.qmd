@@ -433,9 +433,126 @@ Through this model, I can make prediction by using information from historical m
 
 
 
+## Estimation Procedure
+```{r}
+#Prepare data for BVAR#
+start_date <- as.Date("1990-01-01")
+end_date <- as.Date("2022-12-31")
+
+date <- seq(from=as.Date("1991-01-01"), to=as.Date("2022-12-31"), by="month")
+
+plot_data = data.frame(date = date, Cash_Rate_Target = plot_data$Cash_Rate_Target)
+cash_rate = xts::xts(plot_data$Cash_Rate_Target, plot_data$date)
+
+plot_data_2 = data.frame(date = date, Unemployment = plot_data_2$Unemployment)
+unemploy = xts::xts(plot_data_2$Unemployment, plot_data_2$date)
+
+plot_data_3 = data.frame(date = date, M1_Amount = plot_data_3$M1_Amount)
+m1 = xts::xts(plot_data_3$M1_Amount, plot_data_3$date)
+
+plot_data_5 = data.frame(date = date, CPI_Amount = plot_data_5$CPI_Amount)
+cpi = xts::xts(plot_data_5$CPI_Amount, plot_data_5$date)
+
+plot_data_6 = data.frame(date = date, GDP_Amount = plot_data_6$GDP_Amount)
+gdp = xts::xts(plot_data_6$GDP_Amount, plot_data_6$date)
+
+plot_data_7 = data.frame(date = date, Houselend_Amount = plot_data_7$Houselend_Amount)
+houselend = xts::xts(plot_data_7$Houselend_Amount, plot_data_7$date)
+
+plot_data_8 = data.frame(date = date, Businesslend_Amount = plot_data_8$Businesslend_Amount)
+businesslend = xts::xts(plot_data_8$Businesslend_Amount, plot_data_8$date)
+
+all_data = merge(cash_rate,unemploy,m1,cpi,gdp,houselend,businesslend)
+
+
+```
+
+```{r static data setup}
+#| echo: false
+#| message: false
+#| warning: false
+y             = ts(all_data[,1:ncol(all_data)])
+Y             = ts(y[13:nrow(y),], frequency=12)
+X             = matrix(1,nrow(Y),1)
+
+for (i in 1:frequency(Y)){
+  X           = cbind(X,y[13:nrow(y)-i,])
+}
+ 
+## Pre-setup 
+N             = ncol(Y)
+p             = frequency(Y)
+A.hat = solve(t(X)%*%X)%*%t(X)%*%Y
+Sigma.hat = t(Y-X%*%A.hat)%*%(Y-X%*%A.hat)/nrow(Y)
+
+
+# Prior distribution specification - Minnesota prior 
+kappa.1       = 10                                    # shrinkage for A1 to Ap
+kappa.2       = 100                                   # shrinkage for constant 
+A.prior       = matrix(0,nrow(A.hat),ncol(A.hat))
+A.prior[2,1]  = 1
+V.prior       = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+S.prior       = diag(diag(Sigma.hat))
+nu.prior      = N+1
+```
+
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Posterior sample draw function 
+posterior.draws       = function (S, Y, X){
+    # normal-inverse Wishard posterior parameters
+    V.bar.inv         = t(X)%*%X + diag(1/diag(V.prior))
+    V.bar             = solve(V.bar.inv)
+    A.bar             = V.bar%*%(t(X)%*%Y + diag(1/diag(V.prior))%*%A.prior)
+    nu.bar            = nrow(Y) + nu.prior
+    S.bar             = S.prior + t(Y)%*%Y + t(A.prior)%*%diag(1/diag(V.prior))%*%A.prior - t(A.bar)%*%V.bar.inv%*%A.bar
+    S.bar.inv         = solve(S.bar)
+  
+    # posterior draws 
+    Sigma.posterior   = rWishart(S, df=nu.bar, Sigma=S.bar.inv)
+    Sigma.posterior   = apply(Sigma.posterior,3,solve)
+    Sigma.posterior   = array(Sigma.posterior,c(N,N,S))
+    A.posterior       = array(rnorm(prod(c(dim(A.bar),S))),c(dim(A.bar),S))
+    L                 = t(chol(V.bar))
+    for (s in 1:S){
+      A.posterior[,,s]= A.bar + L%*%A.posterior[,,s]%*%chol(Sigma.posterior[,,s])
+    }
+ 
+    output            = list(A.posterior=A.posterior, Sigma.posterior=Sigma.posterior)
+    return(output)
+}
 
 
 
+
+## Applying function 
+# A.hat       = solve(t(X)%*%X)%*%t(X)%*%Y
+posterior.sample.draws = posterior.draws(S=120000, Y=Y, X=X)
+
+
+
+```
+
+```{r}
+    nu.bar            = nrow(Y) + nu.prior
+    V.bar.inv         = t(X)%*%X + diag(1/diag(V.prior))
+    V.bar             = solve(V.bar.inv)
+    A.bar             = V.bar%*%(t(X)%*%Y + diag(1/diag(V.prior))%*%A.prior)
+    nu.bar            = nrow(Y) + nu.prior
+    S.bar             = S.prior + t(Y)%*%Y + t(A.prior)%*%diag(1/diag(V.prior))%*%A.prior - t(A.bar)%*%V.bar.inv%*%A.bar
+    S.bar.inv         = solve(S.bar)
+    S = 10000
+    Sigma.posterior   = rWishart(S, df=nu.bar, Sigma=S.bar.inv)
+
+    
+    
+    
+    
+    
+```
 
 
 
