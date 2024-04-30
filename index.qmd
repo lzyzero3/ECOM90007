@@ -12,6 +12,13 @@ bibliography: references.bib
 
 > **Keywords.** bsvars, forecasting, credit market, lending amount, shrinkage, housing market
 
+```{r}
+mcxs1  = "#05386B"
+mcxs2  = "#379683"
+mcxs3  = "#5CDB95"
+mcxs4  = "#8EE4AF"
+mcxs5  = "#EDF5E1"
+```
 
 ```{r,message=FALSE, warning=FALSE}
 library(readabs)
@@ -24,9 +31,11 @@ library(forecast)
 library(ggplot2)
 library(lubridate)
 library(httr)
+library(xts)
 library(readxl)
 library(gridExtra)
 library(knitr)
+library(mvtnorm)
 library(kableExtra)
 response_1 <- GET("https://www.rba.gov.au/statistics/tables/xls/f01hist.xlsx?v=2024-04-03-12-05-38")
 temp_file_1 <- tempfile(fileext = ".xlsx")
@@ -42,7 +51,7 @@ plot_data <- data.frame(Date = dates, Cash_Rate_Target = Cash_Rate_Target)
 Cash_Rate_Target = na.omit(Cash_Rate_Target)
 plot_data <- na.omit(plot_data[c("Title", "Cash_Rate_Target")])
 plot_data <- plot_data %>% 
-  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2023-09-30"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -59,7 +68,7 @@ Unemployment = as.numeric(Unemployment)
 Unemployment <- log(Unemployment)
 plot_data_2 <- data.frame(Date = dates, Unemployment = Unemployment)
 plot_data_2 <- plot_data_2 %>% 
-  filter(...1 >= as.Date("1991-01-01") & ...1  <= as.Date("2022-12-31"))
+  filter(...1 >= as.Date("1991-01-01") & ...1  <= as.Date("2023-09-30"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -78,7 +87,7 @@ plot_data_3 <- data.frame(Date = dates, M1_Amount = M1)
 plot_data_3 <- na.omit(plot_data_3[c("Title", "M1_Amount")])
 M1 = na.omit(M1)
 plot_data_3 <- plot_data_3 %>% 
-  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2023-09-30"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -110,7 +119,7 @@ CPI = as.numeric(CPI)
 CPI <- log(CPI)
 plot_data_5 <- data.frame(Date = dates, CPI_Amount = CPI)
 plot_data_5 <- plot_data_5 %>% 
-  filter(...1 >= as.Date("1991-01-01") & ...1 <= as.Date("2023-3-31"))
+  filter(...1 >= as.Date("1991-01-01") & ...1 <= as.Date("2023-12-31"))
 plot_data_5$`...1` <- as.Date(plot_data_5$`...1`, "%m %Y-%d")
 plot_data_5$...1 <- as.Date(cut(plot_data_5$...1, breaks = "quarter"), format = "%Y-%m-%d") - 1
 
@@ -127,7 +136,7 @@ zoo_interpolated <- na.approx(zoo_merged)
 plot_data_monthly <- data.frame(Date = index(zoo_interpolated), CPI_Amount = coredata(zoo_interpolated))
 plot_data_5 <- plot_data_monthly[!duplicated(format(plot_data_monthly$Date, "%Y-%m")), ]
 plot_data_5 <- plot_data_5 %>% 
-  filter(Date >= as.Date("1991-01-01") & Date <= as.Date("2022-12-31"))
+  filter(Date >= as.Date("1991-01-01") & Date <= as.Date("2023-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -144,7 +153,7 @@ GDP = as.numeric(GDP)
 GDP <- log(GDP)
 plot_data_6 <- data.frame(Date = dates, GDP_Amount = GDP)
 plot_data_6 <- plot_data_6 %>% 
-  filter(...1 >= as.Date("1991-01-01") & ...1 <= as.Date("2023-3-31"))
+  filter(...1 >= as.Date("1991-01-01") & ...1 <= as.Date("2023-12-31"))
 plot_data_6$`...1` <- as.Date(plot_data_6$`...1`, "%m %Y-%d")
 plot_data_6$...1 <- as.Date(cut(plot_data_6$...1, breaks = "quarter"), format = "%Y-%m-%d") - 1
 
@@ -161,7 +170,7 @@ zoo_interpolated <- na.approx(zoo_merged)
 plot_data_monthly <- data.frame(Date = index(zoo_interpolated), GDP_Amount = coredata(zoo_interpolated))
 plot_data_6 <- plot_data_monthly[!duplicated(format(plot_data_monthly$Date, "%Y-%m")), ]
 plot_data_6 <- plot_data_6 %>% 
-  filter(Date >= as.Date("1991-01-01") & Date <= as.Date("2022-12-31"))
+  filter(Date >= as.Date("1991-01-01") & Date <= as.Date("2023-12-31"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -178,7 +187,7 @@ Houselend = as.numeric(Houselend)
 Houselend <- log(Houselend)
 plot_data_7 <- data.frame(Date = dates, Houselend_Amount = Houselend)
 plot_data_7 <- plot_data_7 %>% 
-  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2023-09-30"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -190,13 +199,13 @@ data_8 <- data_8[-(1:9), ]
 origin_date <- as.Date("1899-12-30")
 data_8[[1]] <- origin_date + as.numeric(data_8[[1]]) - 2
 dates = data_8[1]
-Businesslend <- data_8$`Commercial lending; Business sector`
+Businesslend <- data_8$`Lending to government; Public sector securities`
 Businesslend = as.numeric(Businesslend)
 Businesslend <- log(Businesslend)
 plot_data_8 <- data.frame(Date = dates, Businesslend_Amount = Businesslend)
 Businesslend = na.omit(Businesslend)
 plot_data_8 <- plot_data_8 %>% 
-  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2022-12-31"))
+  filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2023-09-30"))
 ```
 
 ```{r,message=FALSE, warning=FALSE}
@@ -434,12 +443,13 @@ Through this model, I can make prediction by using information from historical m
 
 
 ## Estimation Procedure
+### Basic Model 
 ```{r}
 #Prepare data for BVAR#
 start_date <- as.Date("1990-01-01")
 end_date <- as.Date("2022-12-31")
 
-date <- seq(from=as.Date("1991-01-01"), to=as.Date("2022-12-31"), by="month")
+date <- seq(from=as.Date("1991-01-01"), to=as.Date("2023-09-30"), by="month")
 
 plot_data = data.frame(date = date, Cash_Rate_Target = plot_data$Cash_Rate_Target)
 cash_rate = xts::xts(plot_data$Cash_Rate_Target, plot_data$date)
@@ -462,19 +472,213 @@ houselend = xts::xts(plot_data_7$Houselend_Amount, plot_data_7$date)
 plot_data_8 = data.frame(date = date, Businesslend_Amount = plot_data_8$Businesslend_Amount)
 businesslend = xts::xts(plot_data_8$Businesslend_Amount, plot_data_8$date)
 
-all_data = merge(cash_rate,unemploy,m1,cpi,gdp,houselend,businesslend)
+all_data = merge(houselend,businesslend,cash_rate,unemploy,m1,cpi,gdp)
 
 
 ```
+
+The basic model for forecasting is built on the Normal Inverse Wishart distribution. The prior distribution of A, $\Sigma$ are shown below:
+
+#### Prior distribution 
+
+```{=tex}
+\begin{align}
+p(A,\Sigma) &= p(A|\Sigma)p(\Sigma)\\
+A|\Sigma &\sim MN_{K\times N}(\underline{A}, \Sigma,\underline{V} ) \\ 
+\Sigma &\sim IW_{N}(\underline{S}, \underline{v})
+\end{align}
+```
+
+In this formula:
+
+- $\Sigma$ is a $K \times N$ square symmetric and positive definite matrix.
+
+- $\underline{A}$ is a $K \times N$ matrix for the first lag of $houselend_t$.
+
+- $\underline{V}$ means the shrinking level for $\underline{A}$. When $\underline{V}$ becomes higher, the shrinkage will be looser. 
+
+- $\underline{S}$ is a $N$ vector diagonal matrix.
+
+- $\underline{v}$ equals to $N+1$.
+
+
+#### posterior distribution 
+
+Based on the prior distribution, we can infer the posterior distribution below:
+
+```{=tex}
+\begin{align}
+p(A,\Sigma | Y,X) &= p(A|Y,X,\Sigma)p(\Sigma|Y,X)\\
+p(A|Y,X,\Sigma)&\sim MN_{K\times N}(\overline{A}, \Sigma,\overline{V} ) \\ 
+p(\Sigma|Y,X)&\sim IW_{N}(\overline{S}, \overline{v})
+\end{align}
+```
+
+The parameters $overline{V}$, $overline{S}$, $overline{A}$, and $overline{v}$ are list below:
+
+```{=tex}
+\overline{V} &= (X'X + \underline{V}^{-1})^{-1} \\
+\overline{S} &= \underline{S}+Y'Y+\underline{A'}\underline{V}^{-1}\underline{A}-\overline{A'}\overline{V}^{-1}\overline{A} \\
+\overline{A} &= \overline{V}(X'Y+\underline{V}^{-1}\underline{A}) \\
+\overline{v} &= T + \underline{v} \\ 
+```
+
+
+Then we can drive the joint posterior distribution:
 
 ```{r static data setup}
 #| echo: false
 #| message: false
 #| warning: false
+y = ts(all_data[,1:ncol(all_data)])
+Y = ts(y[13:nrow(y),], frequency=12)
+X = matrix(1,nrow(Y),1)
+
+for (i in 1:frequency(Y)){
+  X  = cbind(X,y[13:nrow(y)-i,])
+}
+ 
+## Pre-setup 
+N  = ncol(Y)
+p  = frequency(Y)
+A.hat = solve(t(X)%*%X)%*%t(X)%*%Y
+Sigma.hat = t(Y-X%*%A.hat)%*%(Y-X%*%A.hat)/nrow(Y)
+
+# Drive the Minnesota prior 
+kappa.1       = 10              # shrinkage for A1 to Ap
+kappa.2       = 200             # shrinkage for constant 
+A.prior       = matrix(0,nrow(A.hat),ncol(A.hat))
+A.prior[2,1]  = 1
+S.prior       = diag(diag(Sigma.hat))
+V.prior       = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+nu.prior      = N+1
+```
+
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Posterior sample draw function for normal-inverse Wishard posterior parameters
+posterior.draws  = function (S, Y, X){
+    V.bar.inv = t(X)%*%X + diag(1/diag(V.prior))
+    V.bar = solve(V.bar.inv)
+    A.bar = V.bar%*%(t(X)%*%Y + diag(1/diag(V.prior))%*%A.prior)
+    nu.bar = nrow(Y) + nu.prior
+    S.bar  = S.prior + t(Y)%*%Y + t(A.prior)%*%diag(1/diag(V.prior))%*%A.prior - t(A.bar)%*%V.bar.inv%*%A.bar
+    S.bar.inv         = solve(S.bar)
+  
+    # draw the posterior
+    Sigma.posterior   = rWishart(S, df=nu.bar, Sigma=S.bar.inv)
+    Sigma.posterior   = apply(Sigma.posterior,3,solve)
+    Sigma.posterior   = array(Sigma.posterior,c(N,N,S))
+    A.posterior       = array(rnorm(prod(c(dim(A.bar),S))),c(dim(A.bar),S))
+    L                 = t(chol(V.bar))
+    for (s in 1:S){
+      A.posterior[,,s]= A.bar + L%*%A.posterior[,,s]%*%chol(Sigma.posterior[,,s])
+    }
+    output  = list(A.posterior=A.posterior, Sigma.posterior=Sigma.posterior)
+    return(output)
+}
+
+
+## Applying function 
+# A.hat       = solve(t(X)%*%X)%*%t(X)%*%Y
+posterior.sample.draws = posterior.draws(S=50000, Y=Y, X=X)
+
+
+```
+
+The graphs below show the posterior distribution for $houselend_t$ and $businesslend_t$:
+
+```{r}
+# Presenting output
+head(round(apply(posterior.sample.draws$A.posterior, 1:2, mean),6))         # posterior draw A
+head(round(apply(posterior.sample.draws$Sigma.posterior, 1:2, mean),6))     
+
+# posterior draw sigma
+
+par(mfrow=c(2,2), mar=c(4,4,2,2))
+plot.ts(posterior.sample.draws$A.posterior[2,1,], xlab = "Simulation times S", ylab = "houselend", col = "#05386B")    
+hist(posterior.sample.draws$A.posterior[2,1,], xlab = "houselend", col = "#05386B", main = '')
+plot.ts(posterior.sample.draws$Sigma.posterior[1,1,], xlab = "Simulation times S", ylab = "houselend sigma", col = "#5CDB95") 
+hist(posterior.sample.draws$Sigma.posterior[1,1,], xlab = "houselend sigma", col = "#5CDB95", main = '')
+plot.ts(posterior.sample.draws$A.posterior[3,2,], xlab = "Simulation times S", ylab = "businesslend", col = "#EDF5E1") 
+hist(posterior.sample.draws$A.posterior[3,2,], xlab = "businesslend", col = "#EDF5E1", main = '')
+plot.ts(posterior.sample.draws$Sigma.posterior[2,2,], xlab = "Simulation times S", ylab = "businesslend sigma", col = "#8EE4AF")   
+hist(posterior.sample.draws$Sigma.posterior[2,2,], xlab = "businesslend sigma", col = "#8EE4AF", main = '')     
+
+```
+
+
+
+### Extended Model 
+Compared to the basic model, the extended model contains a hierarchical structure and introduces a shrinkage parameter kappa $k$ that follows an inverse gamma 2 distribution. This new structure in the extended model will facilitate the modeling of the complexity inherent in time series.
+
+The extended model's distribution is specified below:
+```{=tex}
+\begin{align}
+p(A,\Sigma, k |Y,X) &\propto L(Y,X|A,\Sigma)p(A,\Sigma, k)\\
+&\propto L(Y,X|A,\Sigma)p(A |\Sigma, k)p(\Sigma)p(k)
+\end{align}
+```
+
+
+```{=tex}
+\begin{align}
+p(A |\Sigma, k) &\sim MN_{K\times N}(\underline{A}, \Sigma, k\underline{V})\\
+p(\Sigma) &\sim IW_{N}(\underline{S},\underline{v})\\
+p(k) &\sim IG2(\underline{S_{k}}, \underline{v_{k}} ) \\ 
+\end{align}
+```
+
+Their full conditional posterior distribution of $k$ is:
+
+```{=tex}
+\begin{align}
+p(k |Y,X,A,\Sigma ) &\propto L(Y,X|A,\Sigma)p(A,\Sigma, k)\\
+&\propto L(Y,X|A,\Sigma)p(A |\Sigma, k)p(\Sigma)p(k) \\
+&\propto p(A |\Sigma, k)p(k) 
+\end{align}
+```
+```{=tex}
+\begin{align}
+p(k |Y,X,A,\Sigma ) &\propto \det(k\underline{V})^{-\frac{N}{2}}\exp\left\{-\frac{1}{2}TR[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})] \right\} k^{-\frac{\underline{v_{k}+2}}{2}}\exp\left\{ -\frac{1}{2}\frac{\underline{S_{k}}}{k} \right\} \\
+& = k^{-\frac{kN+\underline{v_{k}+2}}{2}}\exp\left\{-\frac{1}{2}\frac{TR[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})]+\underline{S_{k}}}{k} \right\}
+\end{align}
+```
+
+Each parameters' posterior distribution can be written below:
+
+```{=tex}
+\begin{align}
+p(A |Y,X,\Sigma, k) &\sim MN_{K\times N}(\overline{A}, \Sigma, \overline{V})\\
+p(\Sigma|Y,X,A,k) &\sim IW_{N}(\overline{S},\overline{v})\\
+p(k |Y,X, A,\Sigma) &\sim IG2(\overline{S_{k}}, \overline{v_{k}} ) \\
+
+```
+
+```{=tex}
+\overline{V} &= (X'X + (k\underline{V})^{-1})^{-1}\\
+\overline{A} &= \overline{V}(X'Y+(k\underline{V})^{-1}\underline{A}) \\
+\overline{v} &= T+\underline{v}\\
+\overline{S} &= \underline{S}+Y'Y+\underline{A}'(k\underline{V})^{-1}\underline{A}-\overline{A}'\overline{V}^{-1}\overline{A} \\
+\overline{v_{k}} &= kN + \underline{v_{k}}\\
+\overline{S_{k}} &= TR[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})]+\underline{S_{k}}\\
+
+\end{align}
+```
+
+## Model Forecasting 
+### Forecasting for basic BVAR model
+```{r forecasting static data}
+#| echo: false
+#| message: false
+#| warning: false
+## Present data X, Y
 y             = ts(all_data[,1:ncol(all_data)])
 Y             = ts(y[13:nrow(y),], frequency=12)
 X             = matrix(1,nrow(Y),1)
-
 for (i in 1:frequency(Y)){
   X           = cbind(X,y[13:nrow(y)-i,])
 }
@@ -482,9 +686,8 @@ for (i in 1:frequency(Y)){
 ## Pre-setup 
 N             = ncol(Y)
 p             = frequency(Y)
-A.hat = solve(t(X)%*%X)%*%t(X)%*%Y
-Sigma.hat = t(Y-X%*%A.hat)%*%(Y-X%*%A.hat)/nrow(Y)
-
+A.hat         = solve(t(X)%*%X)%*%t(X)%*%Y
+Sigma.hat     = t(Y-X%*%A.hat)%*%(Y-X%*%A.hat)/nrow(Y)
 
 # Prior distribution specification - Minnesota prior 
 kappa.1       = 10                                    # shrinkage for A1 to Ap
@@ -498,61 +701,88 @@ nu.prior      = N+1
 
 
 ```{r}
-#| echo: true
-#| message: false
-#| warning: false
-## Posterior sample draw function 
-posterior.draws       = function (S, Y, X){
-    # normal-inverse Wishard posterior parameters
-    V.bar.inv         = t(X)%*%X + diag(1/diag(V.prior))
-    V.bar             = solve(V.bar.inv)
-    A.bar             = V.bar%*%(t(X)%*%Y + diag(1/diag(V.prior))%*%A.prior)
-    nu.bar            = nrow(Y) + nu.prior
-    S.bar             = S.prior + t(Y)%*%Y + t(A.prior)%*%diag(1/diag(V.prior))%*%A.prior - t(A.bar)%*%V.bar.inv%*%A.bar
-    S.bar.inv         = solve(S.bar)
-  
-    # posterior draws 
-    Sigma.posterior   = rWishart(S, df=nu.bar, Sigma=S.bar.inv)
-    Sigma.posterior   = apply(Sigma.posterior,3,solve)
-    Sigma.posterior   = array(Sigma.posterior,c(N,N,S))
-    A.posterior       = array(rnorm(prod(c(dim(A.bar),S))),c(dim(A.bar),S))
-    L                 = t(chol(V.bar))
-    for (s in 1:S){
-      A.posterior[,,s]= A.bar + L%*%A.posterior[,,s]%*%chol(Sigma.posterior[,,s])
-    }
- 
-    output            = list(A.posterior=A.posterior, Sigma.posterior=Sigma.posterior)
-    return(output)
+
+## Applying function 
+posterior.sample.draws = posterior.draws(S=50000, Y=Y, X=X)
+A.posterior.simu       = posterior.sample.draws$A.posterior
+Sigma.posterior.simu   = posterior.sample.draws$Sigma.posterior
+
+## 12-month ahead forecasting h=12
+# set up
+h                      = 12
+S                      = 50000
+Y.h                    = array(NA,c(h,N,S))
+
+# sampling predictive density
+for (s in 1:S){
+  A.posterior.draw     = A.posterior.simu[,,s]
+  Sigma.posterior.draw = Sigma.posterior.simu[,,s]
+    x.Ti               = Y[(nrow(Y)-p+1):nrow(Y),]
+    x.Ti               = x.Ti[p:1,]
+  for (i in 1:h){
+    x.T                = c(1,as.vector(t(x.Ti)))
+    Y.f                = rmvnorm(1, mean = x.T%*%A.posterior.draw, sigma=Sigma.posterior.draw)
+      x.Ti             = rbind(Y.f,x.Ti[1:(p-1),])
+    Y.h[i,,s]          = Y.f[1:N]
+  }
 }
 
 
 
 
-## Applying function 
-# A.hat       = solve(t(X)%*%X)%*%t(X)%*%Y
-posterior.sample.draws = posterior.draws(S=120000, Y=Y, X=X)
 
 
 
 ```
+
+Print the forecasting result for next 12 months for the homelend amount and businesslend amount. 
 
 ```{r}
-    nu.bar            = nrow(Y) + nu.prior
-    V.bar.inv         = t(X)%*%X + diag(1/diag(V.prior))
-    V.bar             = solve(V.bar.inv)
-    A.bar             = V.bar%*%(t(X)%*%Y + diag(1/diag(V.prior))%*%A.prior)
-    nu.bar            = nrow(Y) + nu.prior
-    S.bar             = S.prior + t(Y)%*%Y + t(A.prior)%*%diag(1/diag(V.prior))%*%A.prior - t(A.bar)%*%V.bar.inv%*%A.bar
-    S.bar.inv         = solve(S.bar)
-    S = 10000
-    Sigma.posterior   = rWishart(S, df=nu.bar, Sigma=S.bar.inv)
+# transform houselend into annual houselend, and plot
+par(mfrow=c(1,1), mar=c(6,6,3,3))
+point.houselend.h            = ts(round(apply(Y.h[,1,],1,mean),6))
+houselend.data.h             = c(y[,1], point.houselend.h)
+houselend.data.h             = rev(houselend.data.h)
+forecast.houselend             = matrix(NA, length(houselend.data.h)-3 , 1)
+for (i in 1: (length(houselend.data.h))) {
+     forecast.houselend[i]     = sum (houselend.data.h[i: (i+3)])
+}
+forecast.houselend            = ts(rev(forecast.houselend))
+forecast.houselend             = xts(forecast.houselend, seq(as.Date("1991-01-01"), by = "month", length.out = length(forecast.houselend)))
 
-    
-    
-    
-    
-    
+plot.ts(forecast.houselend, lwd=2, col="black", xaxt='n')
+axis(1,c(0,108,228,348,nrow(y)+h),c("1991","2000","2010","2020",""))
+abline(h=0.02, col="red", lty = 2)
+abline(v=393, col = "#8EE4AF", lwd=1.5)
+abline(v=405, col = "#379683", lwd=1.5)
+legend(98, 0.075, legend=c("Y2021", "Y2022"), col=c("#8EE4AF", "#379683"), lty=1, cex=0.6)
 ```
+
+
+```{r}
+# transform businesslend into annual businesslend, and plot
+par(mfrow=c(1,1), mar=c(6,6,3,3))
+point.businesslend.h            = ts(round(apply(Y.h[,2,],1,mean),6))
+businesslend.data.h             = c(y[,2], point.businesslend.h)
+businesslend.data.h             = rev(businesslend.data.h)
+forecast.businesslend             = matrix(NA, length(businesslend.data.h)-3 , 1)
+for (i in 1: (length(houselend.data.h))) {
+     forecast.businesslend[i]     = sum (businesslend.data.h[i: (i+3)])
+}
+forecast.businesslend            = ts(rev(forecast.businesslend))
+forecast.businesslend             = xts(forecast.businesslend, seq(as.Date("1991-01-01"), by = "month", length.out = length(forecast.businesslend)))
+
+plot.ts(forecast.businesslend, lwd=2, col="black", xaxt='n')
+axis(1,c(0,108,228,348,nrow(y)+h),c("1991","2000","2010","2020",""))
+abline(h=0.02, col="red", lty = 2)
+abline(v=393, col = "#8EE4AF", lwd=1.5)
+abline(v=405, col = "#379683", lwd=1.5)
+legend(98, 0.075, legend=c("Y2021", "Y2022"), col=c("#8EE4AF", "#379683"), lty=1, cex=0.6)
+```
+
+
+
+
 
 
 
