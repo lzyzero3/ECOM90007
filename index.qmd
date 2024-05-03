@@ -90,20 +90,6 @@ plot_data_3 <- plot_data_3 %>%
   filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2023-09-30"))
 ```
 
-```{r,message=FALSE, warning=FALSE}
-response_4 <- GET("https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/producer-price-indexes-australia/dec-2023/642701.xlsx")
-temp_file_4 <- tempfile(fileext = ".xlsx")
-writeBin(content(response_4, "raw"), temp_file_4)
-data_4 <- read_excel(temp_file_4, sheet = 2)
-data_4 <- data_4[-(1:9), ]
-origin_date <- as.Date("1899-12-30")
-data_4[[1]] <- origin_date + as.numeric(data_4[[1]]) - 2
-dates = data_4[1]
-PPI <- data_4$`Index Numbers ;  Final ;  Total (Source) ;`
-PPI = as.numeric(PPI)
-PPI <- log(PPI)
-plot_data_4 <- data.frame(Date = dates, PPI = PPI)
-```
 
 ```{r,message=FALSE, warning=FALSE}
 response_5 = GET("https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/dec-quarter-2023/640101.xlsx")
@@ -208,16 +194,6 @@ plot_data_8 <- plot_data_8 %>%
   filter(Title >= as.Date("1991-01-01") & Title <= as.Date("2023-09-30"))
 ```
 
-```{r,message=FALSE, warning=FALSE}
-m1_n = read_rba(series_id = "DMAM1S") 
-m1_n <- m1_n %>% filter(date > as.Date("1899-12-31"))
-
-m1_n <- m1_n %>%
-  mutate(Quarter = paste(year(date), quarter(date), sep = "Q")) %>%
-  group_by(Quarter) %>%
-  summarize(Average = mean(value, na.rm = TRUE))
-
-```
 
 ## Introduction
 
@@ -235,7 +211,7 @@ This section shows the data collection process and their descriptive statistic i
 
 The selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting. This research takes similar variables in macroeconomic forecasting,including the credit market.
 
-These indicators are closely linked to lending market. An increase in PPI and CPI indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher lending volumes. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers. Also, the cash target rate will influences the loan amount by affecting borrowing costs; when lowered, borrowing becomes cheaper, stimulating loan demand, The cash target rate impacts loan market volume by altering borrowing costs: lower rates stimulate loan demand, while higher rates may reduce it.
+These indicators are closely linked to lending market. An increase in CPI indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher lending volumes. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers. Also, the cash target rate will influences the loan amount by affecting borrowing costs; when lowered, borrowing becomes cheaper, stimulating loan demand, The cash target rate impacts loan market volume by altering borrowing costs: lower rates stimulate loan demand, while higher rates may reduce it.
 
 Therefore, in my project, these following specific variables are used in BVAR model:
 
@@ -248,8 +224,6 @@ Therefore, in my project, these following specific variables are used in BVAR mo
 -   $gdp_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
 
 -   $unemploy_t$: Unemplyemnt person aggregate from ABS Database
-
--   $ppi_t$: PPI aggregate from ABS Database
 
 For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
 
@@ -268,8 +242,6 @@ The cash rate target, $cashrate_t$, is in percentages so it doesn't nedd to be t
 -   $gdp_t=\log(gdp_t)$
 
 -   $unemploy_t=\log(unemploy_t)$
-
--   $ppi_t=\log(ppi_t)$
 
 -   $houselend_t=\log(houselend_t)$
 
@@ -299,11 +271,6 @@ p3 = ggplot(plot_data_3, aes(x = Title, y = M1_Amount)) +
   theme_minimal() +
   labs(x = 'Date', y = 'M1')
 
-p4 = ggplot(plot_data_4, aes(x = ...1, y = PPI)) +
-  geom_line(color = 'blue') +
-  theme_minimal() +
-  labs(x = 'Date', y = 'PPI')
-
 p5 = ggplot(plot_data_5, aes(x = Date, y = CPI_Amount)) +
   geom_line(color = 'blue') +
   theme_minimal() +
@@ -324,7 +291,7 @@ p8 = ggplot(plot_data_8, aes(x = Title, y = Businesslend_Amount)) +
   theme_minimal() +
   labs(x = 'Date', y = 'Business Lend')
 
-grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 2)
+grid.arrange(p1, p2, p3, p5, p6, p7, p8, ncol = 2)
 ```
 
 Variables' stationarity is crucial for robustness of models and prediction stability, so we need to use Augmented Dickey-Fuller (ADF) test to make sure that the variables are stationary.
@@ -339,7 +306,6 @@ data_list <- list(
   Cash_Rate_Target = Cash_Rate_Target,
   Unemployment = Unemployment,
   M1 = M1,
-  PPI = PPI,
   CPI = CPI,
   GDP = GDP,
   Houselend = Houselend,
@@ -655,8 +621,17 @@ Each parameters' posterior distribution can be written below:
 p(A |Y,X,\Sigma, k) &\sim MN_{K\times N}(\overline{A}, \Sigma, \overline{V})\\
 p(\Sigma|Y,X,A,k) &\sim IW_{N}(\overline{S},\overline{v})\\
 p(k |Y,X, A,\Sigma) &\sim IG2(\overline{S_{k}}, \overline{v_{k}} ) \\
-
+\end{align}
 ```
+
+These are the posterior distribution of $A$, $\Sigma$ and $k$.
+The matrix $A$ follows a Matrix Normal distribution with mean matrix $\overline{A}$, covariance matrix $\Sigma$ and scaling matrix $\overline{V}$.
+
+The covariance matrix $\Sigma$ follows Inverse Wishart distribution with a scale matrix $\overline{S}$ and degrees of freedom $\overline{v}$
+
+The shrinkage parameter $k$ follows inverse Gamma 2 distribution with shape parameter $\overline{S_{k}}$ and scale parameter $\overline{v_{k}}$
+
+And below are the specified values:
 
 ```{=tex}
 \overline{V} &= (X'X + (k\underline{V})^{-1})^{-1}\\
@@ -669,7 +644,95 @@ p(k |Y,X, A,\Sigma) &\sim IG2(\overline{S_{k}}, \overline{v_{k}} ) \\
 \end{align}
 ```
 
+
+After we get the posterior distribution $p(A,\Sigma, k |Y,X)$, the Gibbs sampler method will be used for generating samples. This approach can deal with complex Bayesian model where can not find analytical solutions.
+
+The graphs below show the posterior distribution for $houselend_t$ and $businesslend_t$ in extended model:
+
+
+```{r function based on extended model}
+#| echo: true
+#| message: false
+#| warning: false
+# setup 
+S1                = 5000                             # determine the burn-in draws
+S2                = 20000                            # number of draws from the final simulation
+total_step           = S1+S2
+A.posterior       = array(NA, dim = c((1+N*p),N,S1+S2))
+Sigma.posterior   = array(NA, dim = c(N,N,S1+S2))
+k.posterior       = matrix(NA, S1+S2, 1)
+
+k.posterior[1]    = 10                               # set k0 
+
+# Prior IG2 distribution: kappa
+S.k.prior         = 3
+nu.k.prior        = 5
+
+## Posterior sample draw function for extended model  
+posterior.draws.exten = function (total_steptep, Y, X){
+for (s in 1:total_step){
+    # normal-inverse Wishard posterior parameters
+    V.bar.inv              = t(X)%*%X + diag(1/ diag( k.posterior[s]* V.prior))
+    V.bar                  = solve(V.bar.inv)
+    A.bar                  = V.bar%*%(t(X)%*%Y + diag(1/diag( k.posterior[s]* V.prior))%*%A.prior)
+    nu.bar                 = nrow(Y) + nu.prior
+    S.bar                  = S.prior + t(Y)%*%Y + t(A.prior)%*%diag(1/diag(k.posterior[s]*V.prior))%*%A.prior - t(A.bar)%*%V.bar.inv%*%A.bar
+    S.bar.inv              = solve(S.bar)
+  
+    # posterior draws for A and Sigma
+    Sigma.posterior.IW     = rWishart(1, df=nu.bar, Sigma=S.bar.inv)
+    Sigma.posterior.draw   = apply(Sigma.posterior.IW,3,solve)
+    Sigma.posterior[,,s]   = Sigma.posterior.draw
+    A.posterior[,,s]       = array(rnorm(prod(c(dim(A.bar),1))),c(dim(A.bar),1))
+    L                      = t(chol(V.bar))
+    A.posterior[,,s]       = A.bar + L%*%A.posterior[,,s]%*%chol(Sigma.posterior[,,s])
+    
+    # posterior draws for k
+    if (s!=total_step){
+    S.k.bar                = sum(diag( Sigma.posterior.IW[,,1] * t(A.posterior[,,s]-A.prior)%*%diag(1/diag(V.prior))%*%(A.posterior[,,s]-A.prior) )) + S.k.prior
+    nu.k.bar               = (1+p*N)*N+ nu.k.prior 
+    k.draw.tmp             = rchisq(1, df=nu.k.bar)
+    k.draw                 = S.k.bar/k.draw.tmp
+    k.posterior[s+1]       = k.draw
+  }
+}
+    output                 = list (A.posterior.exten = A.posterior, Sigma.posterior.exten = Sigma.posterior, k.posterior.exten = k.posterior)
+    return(output)
+}
+## Applying function 
+posterior.ext = posterior.draws.exten(total_step = total_step, Y=Y, X=X)
+
+```
+
+```{r}
+
+# Presenting output
+head(round(apply(posterior.ext$A.posterior.exten[,,(S1+1):total_step], 1:2, mean),6))
+head(round(apply(posterior.ext$Sigma.posterior.exten[,,(S1+1):total_step], 1:2, mean),6))
+round(mean(posterior.ext$k.posterior.exten[(S1+1):total_step]),6)
+
+par(mfrow=c(2,2), mar=c(4,4,2,2))
+plot.ts(posterior.ext$A.posterior.exten[2,1,(S1+1):total_step], xlab = "Simulation times S", ylab = "houselend", col = "darkblue")   
+hist(posterior.ext$A.posterior.exten[2,1,(S1+1):total_step], xlab = "houselend", col = "darkblue", main = '')
+plot.ts(posterior.ext$Sigma.posterior.exten[1,1,(S1+1):total_step], xlab = "Simulation times S", ylab = "houselend_sigma", col = "lightblue") 
+hist(posterior.ext$Sigma.posterior.exten[1,1,(S1+1):total_step], xlab = "houselend_sigma", col = "lightblue", main = '')
+plot.ts(posterior.ext$A.posterior.exten[3,2,(S1+1):total_step], xlab = "Simulation times S", ylab = "businesslend", col = "darkred") 
+hist(posterior.ext$A.posterior.exten[3,2,(S1+1):total_step], xlab = "businesslend", col = "darkred", main = '')
+plot.ts(posterior.ext$Sigma.posterior.exten[2,2,(S1+1):total_step], xlab = "Simulation times S", ylab = "businesslend_sigma", col = "pink")   
+hist(posterior.ext$Sigma.posterior.exten[2,2,(S1+1):total_step], xlab = "businesslend_sigma", col = "pink", main = '')
+
+```
+We can see that compared to basic model, the extended model gives more variability of $A$. For house lending amount, it has larger range which range from 0.9 to 1.3, and that in basic model range from 0.94 to 1.06. For business lending amount, the result from both models don't have strong difference.
+
+
+
+
+
+
+
 ## Model Forecasting 
+In this section, the forecasting will focus on predicting the houselend amount and businesslend amount in next 12 months based on current data (until 2023.9). The forecasting will used the basic model and extended model together.
+
 ### Forecasting for basic BVAR model
 ```{r forecasting static data}
 #| echo: false
@@ -729,13 +792,9 @@ for (s in 1:S){
 
 
 
-
-
-
-
 ```
 
-Print the forecasting result for next 12 months for the homelend amount and businesslend amount. 
+Print the forecasting result for next 12 months for the house lending amount and business lending amount. 
 
 ```{r}
 # transform houselend into annual houselend, and plot
@@ -783,6 +842,7 @@ legend(98, 0.075, legend=c("Y2021", "Y2022"), col=c("#8EE4AF", "#379683"), lty=1
 
 
 
+### Forecasting for extended BVAR model
 
 
 

@@ -21,6 +21,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -99,6 +162,16 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#transformation-and-properties-of-the-variables" id="toc-transformation-and-properties-of-the-variables" class="nav-link" data-scroll-target="#transformation-and-properties-of-the-variables">Transformation and Properties of the Variables</a></li>
   </ul></li>
   <li><a href="#econometric-model-and-hypothesis" id="toc-econometric-model-and-hypothesis" class="nav-link" data-scroll-target="#econometric-model-and-hypothesis">Econometric Model and Hypothesis</a></li>
+  <li><a href="#estimation-procedure" id="toc-estimation-procedure" class="nav-link" data-scroll-target="#estimation-procedure">Estimation Procedure</a>
+  <ul class="collapse">
+  <li><a href="#basic-model" id="toc-basic-model" class="nav-link" data-scroll-target="#basic-model">Basic Model</a></li>
+  <li><a href="#extended-model" id="toc-extended-model" class="nav-link" data-scroll-target="#extended-model">Extended Model</a></li>
+  </ul></li>
+  <li><a href="#model-forecasting" id="toc-model-forecasting" class="nav-link" data-scroll-target="#model-forecasting">Model Forecasting</a>
+  <ul class="collapse">
+  <li><a href="#forecasting-for-basic-bvar-model" id="toc-forecasting-for-basic-bvar-model" class="nav-link" data-scroll-target="#forecasting-for-basic-bvar-model">Forecasting for basic BVAR model</a></li>
+  <li><a href="#forecasting-for-extended-bvar-model" id="toc-forecasting-for-extended-bvar-model" class="nav-link" data-scroll-target="#forecasting-for-extended-bvar-model">Forecasting for extended BVAR model</a></li>
+  </ul></li>
   <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">Reference</a></li>
   </ul>
 </nav>
@@ -159,9 +232,6 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell">
 
 </div>
-<div class="cell">
-
-</div>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>This project is focusing on the credit market in Australia. It intends to use Bayesian VAR approach in forecasting of lending amounts in housing and business sector.</p>
@@ -174,7 +244,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="variables-selection" class="level3">
 <h3 class="anchored" data-anchor-id="variables-selection">Variables Selection</h3>
 <p>The selection of variables grounds in several macroeconomic indicators, derived from the official databases of the Australian Bureau of Statistics (ABS) and the Reserve Bank of Australia (RBA). The rationale for the choice of variables is informed by the work of scholars Marta Bańbura, Domenico Giannone, and Michele Lenza (2015) on European macroeconomic forecasting. This research takes similar variables in macroeconomic forecasting,including the credit market.</p>
-<p>These indicators are closely linked to lending market. An increase in PPI and CPI indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher lending volumes. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers. Also, the cash target rate will influences the loan amount by affecting borrowing costs; when lowered, borrowing becomes cheaper, stimulating loan demand, The cash target rate impacts loan market volume by altering borrowing costs: lower rates stimulate loan demand, while higher rates may reduce it.</p>
+<p>These indicators are closely linked to lending market. An increase in CPI indices signifies a decline in the purchasing power of money, necessitating a rise in loan rates to compensate for inflationary losses. Growth in GDP indicates economic expansion, leading to increased demand for capital, and consequently, higher lending volumes. Higher unemployment rates suggest an economic downturn, prompting banks to lower interest rates to stimulate the economy. Additionally, an abundance of monetary supply leads banks to reduce loan rates to attract more borrowers. Also, the cash target rate will influences the loan amount by affecting borrowing costs; when lowered, borrowing becomes cheaper, stimulating loan demand, The cash target rate impacts loan market volume by altering borrowing costs: lower rates stimulate loan demand, while higher rates may reduce it.</p>
 <p>Therefore, in my project, these following specific variables are used in BVAR model:</p>
 <ul>
 <li><p><span class="math inline">\(m1_t\)</span>: M1 aggregate from RBA Database</p></li>
@@ -182,7 +252,6 @@ ul.task-list li input[type="checkbox"] {
 <li><p><span class="math inline">\(cashrate_t\)</span>: Cash Rate Target aggregate from RBA Database</p></li>
 <li><p><span class="math inline">\(gdp_t\)</span>: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database</p></li>
 <li><p><span class="math inline">\(unemploy_t\)</span>: Unemplyemnt person aggregate from ABS Database</p></li>
-<li><p><span class="math inline">\(ppi_t\)</span>: PPI aggregate from ABS Database</p></li>
 </ul>
 <p>For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:</p>
 <ul>
@@ -198,7 +267,6 @@ ul.task-list li input[type="checkbox"] {
 <li><p><span class="math inline">\(cpi_t=\log(cpi_t)\)</span></p></li>
 <li><p><span class="math inline">\(gdp_t=\log(gdp_t)\)</span></p></li>
 <li><p><span class="math inline">\(unemploy_t=\log(unemploy_t)\)</span></p></li>
-<li><p><span class="math inline">\(ppi_t=\log(ppi_t)\)</span></p></li>
 <li><p><span class="math inline">\(houselend_t=\log(houselend_t)\)</span></p></li>
 <li><p><span class="math inline">\(businesslend_t=\log(businesslend_t)\)</span></p></li>
 </ul>
@@ -231,8 +299,8 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
   <tr>
    <td style="text-align:center;"> Cash_Rate_Target </td>
-   <td style="text-align:center;"> -3.6252247 </td>
-   <td style="text-align:center;"> 0.0306399 </td>
+   <td style="text-align:center;"> -3.6187450 </td>
+   <td style="text-align:center;"> 0.0312591 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
@@ -243,14 +311,8 @@ ul.task-list li input[type="checkbox"] {
   </tr>
   <tr>
    <td style="text-align:center;"> M1 </td>
-   <td style="text-align:center;"> -2.6033276 </td>
-   <td style="text-align:center;"> 0.3229284 </td>
-   <td style="text-align:center;"> 5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> PPI </td>
-   <td style="text-align:center;"> -1.9327309 </td>
-   <td style="text-align:center;"> 0.6045645 </td>
+   <td style="text-align:center;"> -2.5989604 </td>
+   <td style="text-align:center;"> 0.3247770 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
@@ -261,20 +323,20 @@ ul.task-list li input[type="checkbox"] {
   </tr>
   <tr>
    <td style="text-align:center;"> GDP </td>
-   <td style="text-align:center;"> -2.5762913 </td>
-   <td style="text-align:center;"> 0.3335192 </td>
+   <td style="text-align:center;"> -2.0583596 </td>
+   <td style="text-align:center;"> 0.5512835 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> Houselend </td>
-   <td style="text-align:center;"> -0.0142653 </td>
+   <td style="text-align:center;"> -0.0118483 </td>
    <td style="text-align:center;"> 0.9900000 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> Businesslend </td>
-   <td style="text-align:center;"> -1.5052536 </td>
-   <td style="text-align:center;"> 0.7877237 </td>
+   <td style="text-align:center;"> -1.4886978 </td>
+   <td style="text-align:center;"> 0.7937767 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
 </tbody>
@@ -300,50 +362,44 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
   <tr>
    <td style="text-align:center;"> Cash_Rate_Target - First Difference </td>
-   <td style="text-align:center;"> -5.188573 </td>
-   <td style="text-align:center;"> 0.0100000 </td>
+   <td style="text-align:center;"> -5.194850 </td>
+   <td style="text-align:center;"> 0.01 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> Unemployment - First Difference </td>
    <td style="text-align:center;"> -10.088903 </td>
-   <td style="text-align:center;"> 0.0100000 </td>
+   <td style="text-align:center;"> 0.01 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> M1 - First Difference </td>
-   <td style="text-align:center;"> -9.972948 </td>
-   <td style="text-align:center;"> 0.0100000 </td>
-   <td style="text-align:center;"> 5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> PPI - First Difference </td>
-   <td style="text-align:center;"> -3.817442 </td>
-   <td style="text-align:center;"> 0.0207689 </td>
+   <td style="text-align:center;"> -9.984243 </td>
+   <td style="text-align:center;"> 0.01 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> CPI - First Difference </td>
    <td style="text-align:center;"> -4.085297 </td>
-   <td style="text-align:center;"> 0.0100000 </td>
+   <td style="text-align:center;"> 0.01 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> GDP - First Difference </td>
-   <td style="text-align:center;"> -6.707176 </td>
-   <td style="text-align:center;"> 0.0100000 </td>
+   <td style="text-align:center;"> -6.793545 </td>
+   <td style="text-align:center;"> 0.01 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> Houselend - First Difference </td>
-   <td style="text-align:center;"> -7.062507 </td>
-   <td style="text-align:center;"> 0.0100000 </td>
+   <td style="text-align:center;"> -7.068608 </td>
+   <td style="text-align:center;"> 0.01 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> Businesslend - First Difference </td>
-   <td style="text-align:center;"> -6.713399 </td>
-   <td style="text-align:center;"> 0.0100000 </td>
+   <td style="text-align:center;"> -8.554188 </td>
+   <td style="text-align:center;"> 0.01 </td>
    <td style="text-align:center;"> 5 </td>
   </tr>
 </tbody>
@@ -388,6 +444,243 @@ ul.task-list li input[type="checkbox"] {
 \end{align}\]</span>
 <p>where <span class="math inline">\(Y\)</span> is a <span class="math inline">\(T\times N\)</span> matrix with <span class="math inline">\(Y_{T \times N} = \left( y_1', y_2', ..., y_T' \right)'\)</span>. <span class="math inline">\(X\)</span> is a <span class="math inline">\(T\times k\)</span> matrix, where <span class="math inline">\(k = 1 + Np\)</span> as <span class="math inline">\(p\)</span> is the lag order. It can be written as <span class="math inline">\(X_{T \times k} = \left( x_1', x_2', ..., x_T' \right)'\)</span> and each <span class="math inline">\(x_t' = (1, y_{t-1}',y_{t-2}',\dots, y_{t-p}')\)</span> which is a <span class="math inline">\(1 \times k\)</span> matrix.<span class="math inline">\(A\)</span> is the <span class="math inline">\(k\times N\)</span> matrix which can be written as <span class="math inline">\(A_{k \times N} = \left( a_0, A_1,A_2 ..., A_p \right)'\)</span>. <span class="math inline">\(U_{T\times N} = \left( u_1', u_2', ..., u_T' \right)\)</span> and it is a <span class="math inline">\(T \times N\)</span> matrix.</p>
 <p>Through this model, I can make prediction by using information from historical macroeconomic data to estimate the probability distribution of future variables. The outcomes of these estimations will facilitate the interpretation of future loan market trends and the impact of various macroeconomic factors on the loan market.</p>
+</section>
+<section id="estimation-procedure" class="level2">
+<h2 class="anchored" data-anchor-id="estimation-procedure">Estimation Procedure</h2>
+<section id="basic-model" class="level3">
+<h3 class="anchored" data-anchor-id="basic-model">Basic Model</h3>
+<div class="cell">
+
+</div>
+<p>The basic model for forecasting is built on the Normal Inverse Wishart distribution. The prior distribution of A, <span class="math inline">\(\Sigma\)</span> are shown below:</p>
+<section id="prior-distribution" class="level4">
+<h4 class="anchored" data-anchor-id="prior-distribution">Prior distribution</h4>
+<span class="math display">\[\begin{align}
+p(A,\Sigma) &amp;= p(A|\Sigma)p(\Sigma)\\
+A|\Sigma &amp;\sim MN_{K\times N}(\underline{A}, \Sigma,\underline{V} ) \\
+\Sigma &amp;\sim IW_{N}(\underline{S}, \underline{v})
+\end{align}\]</span>
+<p>In this formula:</p>
+<ul>
+<li><p><span class="math inline">\(\Sigma\)</span> is a <span class="math inline">\(K \times N\)</span> square symmetric and positive definite matrix.</p></li>
+<li><p><span class="math inline">\(\underline{A}\)</span> is a <span class="math inline">\(K \times N\)</span> matrix for the first lag of <span class="math inline">\(houselend_t\)</span>.</p></li>
+<li><p><span class="math inline">\(\underline{V}\)</span> means the shrinking level for <span class="math inline">\(\underline{A}\)</span>. When <span class="math inline">\(\underline{V}\)</span> becomes higher, the shrinkage will be looser.</p></li>
+<li><p><span class="math inline">\(\underline{S}\)</span> is a <span class="math inline">\(N\)</span> vector diagonal matrix.</p></li>
+<li><p><span class="math inline">\(\underline{v}\)</span> equals to <span class="math inline">\(N+1\)</span>.</p></li>
+</ul>
+</section>
+<section id="posterior-distribution" class="level4">
+<h4 class="anchored" data-anchor-id="posterior-distribution">posterior distribution</h4>
+<p>Based on the prior distribution, we can infer the posterior distribution below:</p>
+<span class="math display">\[\begin{align}
+p(A,\Sigma | Y,X) &amp;= p(A|Y,X,\Sigma)p(\Sigma|Y,X)\\
+p(A|Y,X,\Sigma)&amp;\sim MN_{K\times N}(\overline{A}, \Sigma,\overline{V} ) \\
+p(\Sigma|Y,X)&amp;\sim IW_{N}(\overline{S}, \overline{v})
+\end{align}\]</span>
+<p>The parameters <span class="math inline">\(overline{V}\)</span>, <span class="math inline">\(overline{S}\)</span>, <span class="math inline">\(overline{A}\)</span>, and <span class="math inline">\(overline{v}\)</span> are list below:</p>
+<p>Then we can drive the joint posterior distribution:</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Posterior sample draw function for normal-inverse Wishard posterior parameters</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>posterior.draws  <span class="ot">=</span> <span class="cf">function</span> (S, Y, X){</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    V.bar.inv <span class="ot">=</span> <span class="fu">t</span>(X)<span class="sc">%*%</span>X <span class="sc">+</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(V.prior))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    V.bar <span class="ot">=</span> <span class="fu">solve</span>(V.bar.inv)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    A.bar <span class="ot">=</span> V.bar<span class="sc">%*%</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>Y <span class="sc">+</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(V.prior))<span class="sc">%*%</span>A.prior)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    nu.bar <span class="ot">=</span> <span class="fu">nrow</span>(Y) <span class="sc">+</span> nu.prior</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    S.bar  <span class="ot">=</span> S.prior <span class="sc">+</span> <span class="fu">t</span>(Y)<span class="sc">%*%</span>Y <span class="sc">+</span> <span class="fu">t</span>(A.prior)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(V.prior))<span class="sc">%*%</span>A.prior <span class="sc">-</span> <span class="fu">t</span>(A.bar)<span class="sc">%*%</span>V.bar.inv<span class="sc">%*%</span>A.bar</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    S.bar.inv         <span class="ot">=</span> <span class="fu">solve</span>(S.bar)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># draw the posterior</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    Sigma.posterior   <span class="ot">=</span> <span class="fu">rWishart</span>(S, <span class="at">df=</span>nu.bar, <span class="at">Sigma=</span>S.bar.inv)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    Sigma.posterior   <span class="ot">=</span> <span class="fu">apply</span>(Sigma.posterior,<span class="dv">3</span>,solve)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    Sigma.posterior   <span class="ot">=</span> <span class="fu">array</span>(Sigma.posterior,<span class="fu">c</span>(N,N,S))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    A.posterior       <span class="ot">=</span> <span class="fu">array</span>(<span class="fu">rnorm</span>(<span class="fu">prod</span>(<span class="fu">c</span>(<span class="fu">dim</span>(A.bar),S))),<span class="fu">c</span>(<span class="fu">dim</span>(A.bar),S))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    L                 <span class="ot">=</span> <span class="fu">t</span>(<span class="fu">chol</span>(V.bar))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>      A.posterior[,,s]<span class="ot">=</span> A.bar <span class="sc">+</span> L<span class="sc">%*%</span>A.posterior[,,s]<span class="sc">%*%</span><span class="fu">chol</span>(Sigma.posterior[,,s])</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    output  <span class="ot">=</span> <span class="fu">list</span>(<span class="at">A.posterior=</span>A.posterior, <span class="at">Sigma.posterior=</span>Sigma.posterior)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(output)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="do">## Applying function </span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># A.hat       = solve(t(X)%*%X)%*%t(X)%*%Y</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>posterior.sample.draws <span class="ot">=</span> <span class="fu">posterior.draws</span>(<span class="at">S=</span><span class="dv">50000</span>, <span class="at">Y=</span>Y, <span class="at">X=</span>X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The graphs below show the posterior distribution for <span class="math inline">\(houselend_t\)</span> and <span class="math inline">\(businesslend_t\)</span>:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>          [,1]      [,2]      [,3]      [,4]      [,5]     [,6]      [,7]
+[1,]  0.011815  0.347458  1.799451  0.604269 -0.132694 0.255203  0.793543
+[2,]  1.008810  0.079389  0.096988  0.044535 -0.020603 0.036695 -0.003184
+[3,] -0.004644  0.968808 -0.067169  0.009367 -0.008724 0.006911 -0.004059
+[4,]  0.003399  0.030199  1.275595 -0.024110 -0.017330 0.008200  0.000297
+[5,] -0.003631  0.169755 -0.184831  0.878743 -0.020750 0.000113 -0.003625
+[6,]  0.004785 -0.104737 -0.148168  0.151273  0.721112 0.041762 -0.006697</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]      [,2]      [,3]      [,4]      [,5]     [,6]     [,7]
+[1,]  6.5e-05  0.000033  0.000049  0.000019 -0.000013 0.000007 -3.0e-06
+[2,]  3.3e-05  0.006172 -0.000100 -0.000086 -0.000034 0.000048 -3.3e-05
+[3,]  4.9e-05 -0.000100  0.020191 -0.000427 -0.000343 0.000149  3.0e-05
+[4,]  1.9e-05 -0.000086 -0.000427  0.002644  0.000040 0.000007 -2.9e-05
+[5,] -1.3e-05 -0.000034 -0.000343  0.000040  0.000471 0.000017 -9.0e-06
+[6,]  7.0e-06  0.000048  0.000149  0.000007  0.000017 0.000079  2.2e-05</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="extended-model" class="level3">
+<h3 class="anchored" data-anchor-id="extended-model">Extended Model</h3>
+<p>Compared to the basic model, the extended model contains a hierarchical structure and introduces a shrinkage parameter kappa <span class="math inline">\(k\)</span> that follows an inverse gamma 2 distribution. This new structure in the extended model will facilitate the modeling of the complexity inherent in time series.</p>
+<p>The extended model’s distribution is specified below:</p>
+<span class="math display">\[\begin{align}
+p(A,\Sigma, k |Y,X) &amp;\propto L(Y,X|A,\Sigma)p(A,\Sigma, k)\\
+&amp;\propto L(Y,X|A,\Sigma)p(A |\Sigma, k)p(\Sigma)p(k)
+\end{align}\]</span>
+<span class="math display">\[\begin{align}
+p(A |\Sigma, k) &amp;\sim MN_{K\times N}(\underline{A}, \Sigma, k\underline{V})\\
+p(\Sigma) &amp;\sim IW_{N}(\underline{S},\underline{v})\\
+p(k) &amp;\sim IG2(\underline{S_{k}}, \underline{v_{k}} ) \\
+\end{align}\]</span>
+<p>Their full conditional posterior distribution of <span class="math inline">\(k\)</span> is:</p>
+<span class="math display">\[\begin{align}
+p(k |Y,X,A,\Sigma ) &amp;\propto L(Y,X|A,\Sigma)p(A,\Sigma, k)\\
+&amp;\propto L(Y,X|A,\Sigma)p(A |\Sigma, k)p(\Sigma)p(k) \\
+&amp;\propto p(A |\Sigma, k)p(k)
+\end{align}\]</span>
+<span class="math display">\[\begin{align}
+p(k |Y,X,A,\Sigma ) &amp;\propto \det(k\underline{V})^{-\frac{N}{2}}\exp\left\{-\frac{1}{2}TR[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})] \right\} k^{-\frac{\underline{v_{k}+2}}{2}}\exp\left\{ -\frac{1}{2}\frac{\underline{S_{k}}}{k} \right\} \\
+&amp; = k^{-\frac{kN+\underline{v_{k}+2}}{2}}\exp\left\{-\frac{1}{2}\frac{TR[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})]+\underline{S_{k}}}{k} \right\}
+\end{align}\]</span>
+<p>Each parameters’ posterior distribution can be written below:</p>
+<span class="math display">\[\begin{align}
+p(A |Y,X,\Sigma, k) &amp;\sim MN_{K\times N}(\overline{A}, \Sigma, \overline{V})\\
+p(\Sigma|Y,X,A,k) &amp;\sim IW_{N}(\overline{S},\overline{v})\\
+p(k |Y,X, A,\Sigma) &amp;\sim IG2(\overline{S_{k}}, \overline{v_{k}} ) \\
+\end{align}\]</span>
+<p>These are the posterior distribution of <span class="math inline">\(A\)</span>, <span class="math inline">\(\Sigma\)</span> and <span class="math inline">\(k\)</span>. The matrix <span class="math inline">\(A\)</span> follows a Matrix Normal distribution with mean matrix <span class="math inline">\(\overline{A}\)</span>, covariance matrix <span class="math inline">\(\Sigma\)</span> and scaling matrix <span class="math inline">\(\overline{V}\)</span>.</p>
+<p>The covariance matrix <span class="math inline">\(\Sigma\)</span> follows Inverse Wishart distribution with a scale matrix <span class="math inline">\(\overline{S}\)</span> and degrees of freedom <span class="math inline">\(\overline{v}\)</span></p>
+<p>The shrinkage parameter <span class="math inline">\(k\)</span> follows inverse Gamma 2 distribution with shape parameter <span class="math inline">\(\overline{S_{k}}\)</span> and scale parameter <span class="math inline">\(\overline{v_{k}}\)</span></p>
+<p>And below are the specified values:</p>
+<p>After we get the posterior distribution <span class="math inline">\(p(A,\Sigma, k |Y,X)\)</span>, the Gibbs sampler method will be used for generating samples. This approach can deal with complex Bayesian model where can not find analytical solutions.</p>
+<p>The graphs below show the posterior distribution for <span class="math inline">\(houselend_t\)</span> and <span class="math inline">\(businesslend_t\)</span> in extended model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># setup </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>S1                <span class="ot">=</span> <span class="dv">5000</span>                             <span class="co"># determine the burn-in draws</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>S2                <span class="ot">=</span> <span class="dv">20000</span>                            <span class="co"># number of draws from the final simulation</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>total_step           <span class="ot">=</span> S1<span class="sc">+</span>S2</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>A.posterior       <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>((<span class="dv">1</span><span class="sc">+</span>N<span class="sc">*</span>p),N,S1<span class="sc">+</span>S2))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>Sigma.posterior   <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(N,N,S1<span class="sc">+</span>S2))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>k.posterior       <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, S1<span class="sc">+</span>S2, <span class="dv">1</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>k.posterior[<span class="dv">1</span>]    <span class="ot">=</span> <span class="dv">10</span>                               <span class="co"># set k0 </span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior IG2 distribution: kappa</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>S.k.prior         <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>nu.k.prior        <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Posterior sample draw function for extended model  </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>posterior.draws.exten <span class="ot">=</span> <span class="cf">function</span> (total_steptep, Y, X){</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>total_step){</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># normal-inverse Wishard posterior parameters</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    V.bar.inv              <span class="ot">=</span> <span class="fu">t</span>(X)<span class="sc">%*%</span>X <span class="sc">+</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span> <span class="fu">diag</span>( k.posterior[s]<span class="sc">*</span> V.prior))</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    V.bar                  <span class="ot">=</span> <span class="fu">solve</span>(V.bar.inv)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    A.bar                  <span class="ot">=</span> V.bar<span class="sc">%*%</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>Y <span class="sc">+</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>( k.posterior[s]<span class="sc">*</span> V.prior))<span class="sc">%*%</span>A.prior)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    nu.bar                 <span class="ot">=</span> <span class="fu">nrow</span>(Y) <span class="sc">+</span> nu.prior</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    S.bar                  <span class="ot">=</span> S.prior <span class="sc">+</span> <span class="fu">t</span>(Y)<span class="sc">%*%</span>Y <span class="sc">+</span> <span class="fu">t</span>(A.prior)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(k.posterior[s]<span class="sc">*</span>V.prior))<span class="sc">%*%</span>A.prior <span class="sc">-</span> <span class="fu">t</span>(A.bar)<span class="sc">%*%</span>V.bar.inv<span class="sc">%*%</span>A.bar</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    S.bar.inv              <span class="ot">=</span> <span class="fu">solve</span>(S.bar)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># posterior draws for A and Sigma</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    Sigma.posterior.IW     <span class="ot">=</span> <span class="fu">rWishart</span>(<span class="dv">1</span>, <span class="at">df=</span>nu.bar, <span class="at">Sigma=</span>S.bar.inv)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    Sigma.posterior.draw   <span class="ot">=</span> <span class="fu">apply</span>(Sigma.posterior.IW,<span class="dv">3</span>,solve)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    Sigma.posterior[,,s]   <span class="ot">=</span> Sigma.posterior.draw</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    A.posterior[,,s]       <span class="ot">=</span> <span class="fu">array</span>(<span class="fu">rnorm</span>(<span class="fu">prod</span>(<span class="fu">c</span>(<span class="fu">dim</span>(A.bar),<span class="dv">1</span>))),<span class="fu">c</span>(<span class="fu">dim</span>(A.bar),<span class="dv">1</span>))</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    L                      <span class="ot">=</span> <span class="fu">t</span>(<span class="fu">chol</span>(V.bar))</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    A.posterior[,,s]       <span class="ot">=</span> A.bar <span class="sc">+</span> L<span class="sc">%*%</span>A.posterior[,,s]<span class="sc">%*%</span><span class="fu">chol</span>(Sigma.posterior[,,s])</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># posterior draws for k</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (s<span class="sc">!=</span>total_step){</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    S.k.bar                <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">diag</span>( Sigma.posterior.IW[,,<span class="dv">1</span>] <span class="sc">*</span> <span class="fu">t</span>(A.posterior[,,s]<span class="sc">-</span>A.prior)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(V.prior))<span class="sc">%*%</span>(A.posterior[,,s]<span class="sc">-</span>A.prior) )) <span class="sc">+</span> S.k.prior</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    nu.k.bar               <span class="ot">=</span> (<span class="dv">1</span><span class="sc">+</span>p<span class="sc">*</span>N)<span class="sc">*</span>N<span class="sc">+</span> nu.k.prior </span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    k.draw.tmp             <span class="ot">=</span> <span class="fu">rchisq</span>(<span class="dv">1</span>, <span class="at">df=</span>nu.k.bar)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    k.draw                 <span class="ot">=</span> S.k.bar<span class="sc">/</span>k.draw.tmp</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    k.posterior[s<span class="sc">+</span><span class="dv">1</span>]       <span class="ot">=</span> k.draw</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    output                 <span class="ot">=</span> <span class="fu">list</span> (<span class="at">A.posterior.exten =</span> A.posterior, <span class="at">Sigma.posterior.exten =</span> Sigma.posterior, <span class="at">k.posterior.exten =</span> k.posterior)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(output)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="do">## Applying function </span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>posterior.ext <span class="ot">=</span> <span class="fu">posterior.draws.exten</span>(<span class="at">total_step =</span> total_step, <span class="at">Y=</span>Y, <span class="at">X=</span>X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>          [,1]      [,2]      [,3]      [,4]      [,5]      [,6]      [,7]
+[1,] -0.329792  4.247046 19.988752  1.597781 -1.115335  0.288946  0.353607
+[2,]  1.092143  0.334146  1.021079  0.347190 -0.077997  0.010015  0.006785
+[3,] -0.005700  1.040726 -0.100438 -0.003857 -0.005797 -0.000047  0.000043
+[4,]  0.002184  0.037379  1.272643 -0.024868 -0.015268  0.001169  0.000004
+[5,]  0.000581  0.226137 -0.261175  0.876283 -0.006632 -0.003974  0.001445
+[6,]  0.014061 -0.283193 -0.279749  0.326774  0.882104  0.007506 -0.008408</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]      [,2]      [,3]      [,4]      [,5]     [,6]     [,7]
+[1,]  5.8e-05  0.000022  0.000058  0.000005 -0.000018  1.0e-06  0.0e+00
+[2,]  2.2e-05  0.005209 -0.000194 -0.000049 -0.000001  1.0e-06 -7.0e-06
+[3,]  5.8e-05 -0.000194  0.016656 -0.000198 -0.000196  1.7e-05  1.4e-05
+[4,]  5.0e-06 -0.000049 -0.000198  0.001541 -0.000031 -9.0e-06 -8.0e-06
+[5,] -1.8e-05 -0.000001 -0.000196 -0.000031  0.000253  0.0e+00 -2.0e-06
+[6,]  1.0e-06  0.000001  0.000017 -0.000009  0.000000  4.0e-06  1.0e-06</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 165.8825</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We can see that compared to basic model, the extended model gives more variability of <span class="math inline">\(A\)</span>. For house lending amount, it has larger range which range from 0.9 to 1.3, and that in basic model range from 0.94 to 1.06. For business lending amount, the result from both models don’t have strong difference.</p>
+</section>
+</section>
+<section id="model-forecasting" class="level2">
+<h2 class="anchored" data-anchor-id="model-forecasting">Model Forecasting</h2>
+<p>In this section, the forecasting will focus on predicting the houselend amount and businesslend amount in next 12 months based on current data (until 2023.9). The forecasting will used the basic model and extended model together.</p>
+<section id="forecasting-for-basic-bvar-model" class="level3">
+<h3 class="anchored" data-anchor-id="forecasting-for-basic-bvar-model">Forecasting for basic BVAR model</h3>
+<div class="cell">
+
+</div>
+<div class="cell">
+
+</div>
+<p>Print the forecasting result for next 12 months for the house lending amount and business lending amount.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="forecasting-for-extended-bvar-model" class="level3">
+<h3 class="anchored" data-anchor-id="forecasting-for-extended-bvar-model">Forecasting for extended BVAR model</h3>
+</section>
 </section>
 <section id="reference" class="level2">
 <h2 class="anchored" data-anchor-id="reference">Reference</h2>
