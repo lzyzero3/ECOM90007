@@ -480,7 +480,7 @@ p(\Sigma|Y,X)&\sim IW_{N}(\overline{S}, \overline{v})
 \end{align}
 ```
 
-The parameters $\overline{V}$, $\overline{S}$, $\overline{A}$, and $\overline{v}$ are list below:
+The parameters $overline{V}$, $overline{S}$, $overline{A}$, and $overline{v}$ are list below:
 
 ```{=tex}
 \overline{V} &= (X'X + \underline{V}^{-1})^{-1} \\
