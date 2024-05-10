@@ -393,7 +393,7 @@ To forecast the loan amount in housing and business sector, the Bayesian VAR mod
    y_t &= \mu_0 + A_1y_{t-1}+\dots+A_py_{t-p}+u_t
 \end{align}
 ```
-In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $ppi_t$ , $houselend_t$ , $businesslend_t]'$ and it includes the eight variables we list above. The variables we used in forecasting is $houselend_t$ and $businesslend_t$. The $u_t$ means the error term, which is assumed to be $u_t|Y_{t-1}\sim\;iidN(\textbf{0}_N,I_N)$, and in this following model $N=8$. $A_l$ with l = 1, 2,...,p is an $N\times N$ coefficient matrix for each lag. We can re-write it into matrix form:
+In this model, $y_t=[m1_t$ , $cpi_t$ , $cashrate_t$ , $gdp_t$ , $unemploy_t$ , $houselend_t$ , $businesslend_t]'$ and it includes the eight variables we list above. The variables we used in forecasting is $houselend_t$ and $businesslend_t$. The $u_t$ means the error term, which is assumed to be $u_t|Y_{t-1}\sim\;iidN(\textbf{0}_N,I_N)$, and in this following model $N=8$. $A_l$ with l = 1, 2,...,p is an $N\times N$ coefficient matrix for each lag. We can re-write it into matrix form:
 
 ```{=tex}
 \begin{align}
