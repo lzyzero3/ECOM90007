@@ -166,6 +166,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#basic-model" id="toc-basic-model" class="nav-link" data-scroll-target="#basic-model">Basic Model</a></li>
   <li><a href="#extended-model" id="toc-extended-model" class="nav-link" data-scroll-target="#extended-model">Extended Model</a></li>
+  <li><a href="#proving-model" id="toc-proving-model" class="nav-link" data-scroll-target="#proving-model">Proving Model</a></li>
   </ul></li>
   <li><a href="#model-forecasting" id="toc-model-forecasting" class="nav-link" data-scroll-target="#model-forecasting">Model Forecasting</a>
   <ul class="collapse">
@@ -437,7 +438,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span class="math display">\[\begin{align}
    y_t &amp;= \mu_0 + A_1y_{t-1}+\dots+A_py_{t-p}+u_t
 \end{align}\]</span>
-<p>In this model, <span class="math inline">\(y_t=[m1_t\)</span> , <span class="math inline">\(cpi_t\)</span> , <span class="math inline">\(cashrate_t\)</span> , <span class="math inline">\(gdp_t\)</span> , <span class="math inline">\(unemploy_t\)</span> , <span class="math inline">\(ppi_t\)</span> , <span class="math inline">\(houselend_t\)</span> , <span class="math inline">\(businesslend_t]'\)</span> and it includes the eight variables we list above. The variables we used in forecasting is <span class="math inline">\(houselend_t\)</span> and <span class="math inline">\(businesslend_t\)</span>. The <span class="math inline">\(u_t\)</span> means the error term, which is assumed to be <span class="math inline">\(u_t|Y_{t-1}\sim\;iidN(\textbf{0}_N,I_N)\)</span>, and in this following model <span class="math inline">\(N=8\)</span>. <span class="math inline">\(A_l\)</span> with l = 1, 2,…,p is an <span class="math inline">\(N\times N\)</span> coefficient matrix for each lag. We can re-write it into matrix form:</p>
+<p>In this model, <span class="math inline">\(y_t=[m1_t\)</span> , <span class="math inline">\(cpi_t\)</span> , <span class="math inline">\(cashrate_t\)</span> , <span class="math inline">\(gdp_t\)</span> , <span class="math inline">\(unemploy_t\)</span> , <span class="math inline">\(houselend_t\)</span> , <span class="math inline">\(businesslend_t]'\)</span> and it includes the eight variables we list above. The variables we used in forecasting is <span class="math inline">\(houselend_t\)</span> and <span class="math inline">\(businesslend_t\)</span>. The <span class="math inline">\(u_t\)</span> means the error term, which is assumed to be <span class="math inline">\(u_t|Y_{t-1}\sim\;iidN(\textbf{0}_N,I_N)\)</span>, and in this following model <span class="math inline">\(N=8\)</span>. <span class="math inline">\(A_l\)</span> with l = 1, 2,…,p is an <span class="math inline">\(N\times N\)</span> coefficient matrix for each lag. We can re-write it into matrix form:</p>
 <span class="math display">\[\begin{align}
   Y &amp;= XA + U \\
   U &amp;\sim MN(0, \Sigma \otimes I_T)
@@ -514,21 +515,21 @@ p(\Sigma|Y,X)&amp;\sim IW_{N}(\overline{S}, \overline{v})
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>          [,1]      [,2]      [,3]      [,4]      [,5]     [,6]      [,7]
-[1,]  0.011815  0.347458  1.799451  0.604269 -0.132694 0.255203  0.793543
-[2,]  1.008810  0.079389  0.096988  0.044535 -0.020603 0.036695 -0.003184
-[3,] -0.004644  0.968808 -0.067169  0.009367 -0.008724 0.006911 -0.004059
-[4,]  0.003399  0.030199  1.275595 -0.024110 -0.017330 0.008200  0.000297
-[5,] -0.003631  0.169755 -0.184831  0.878743 -0.020750 0.000113 -0.003625
-[6,]  0.004785 -0.104737 -0.148168  0.151273  0.721112 0.041762 -0.006697</code></pre>
+[1,]  0.011126  0.346563  1.821452  0.607569 -0.133664 0.254255  0.793973
+[2,]  1.008829  0.080680  0.096909  0.045015 -0.020526 0.036511 -0.003543
+[3,] -0.004615  0.968810 -0.067431  0.009338 -0.008753 0.006947 -0.003979
+[4,]  0.003424  0.030217  1.276086 -0.024052 -0.017316 0.008233  0.000310
+[5,] -0.003727  0.170254 -0.184922  0.878288 -0.020772 0.000116 -0.003608
+[6,]  0.004908 -0.105038 -0.149987  0.150592  0.721170 0.041845 -0.006587</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         [,1]      [,2]      [,3]      [,4]      [,5]     [,6]     [,7]
-[1,]  6.5e-05  0.000033  0.000049  0.000019 -0.000013 0.000007 -3.0e-06
-[2,]  3.3e-05  0.006172 -0.000100 -0.000086 -0.000034 0.000048 -3.3e-05
-[3,]  4.9e-05 -0.000100  0.020191 -0.000427 -0.000343 0.000149  3.0e-05
-[4,]  1.9e-05 -0.000086 -0.000427  0.002644  0.000040 0.000007 -2.9e-05
-[5,] -1.3e-05 -0.000034 -0.000343  0.000040  0.000471 0.000017 -9.0e-06
-[6,]  7.0e-06  0.000048  0.000149  0.000007  0.000017 0.000079  2.2e-05</code></pre>
+[1,]  6.5e-05  0.000033  0.000050  0.000019 -0.000013 0.000007 -3.0e-06
+[2,]  3.3e-05  0.006169 -0.000102 -0.000087 -0.000034 0.000047 -3.3e-05
+[3,]  5.0e-05 -0.000102  0.020184 -0.000427 -0.000343 0.000149  2.9e-05
+[4,]  1.9e-05 -0.000087 -0.000427  0.002646  0.000039 0.000007 -2.9e-05
+[5,] -1.3e-05 -0.000034 -0.000343  0.000039  0.000471 0.000017 -9.0e-06
+[6,]  7.0e-06  0.000047  0.000149  0.000007  0.000017 0.000079  2.2e-05</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
@@ -626,24 +627,24 @@ p(k |Y,X, A,\Sigma) &amp;\sim IG2(\overline{S_{k}}, \overline{v_{k}} ) \\
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>          [,1]      [,2]      [,3]      [,4]      [,5]      [,6]      [,7]
-[1,] -0.329792  4.247046 19.988752  1.597781 -1.115335  0.288946  0.353607
-[2,]  1.092143  0.334146  1.021079  0.347190 -0.077997  0.010015  0.006785
-[3,] -0.005700  1.040726 -0.100438 -0.003857 -0.005797 -0.000047  0.000043
-[4,]  0.002184  0.037379  1.272643 -0.024868 -0.015268  0.001169  0.000004
-[5,]  0.000581  0.226137 -0.261175  0.876283 -0.006632 -0.003974  0.001445
-[6,]  0.014061 -0.283193 -0.279749  0.326774  0.882104  0.007506 -0.008408</code></pre>
+[1,] -0.332175  4.244892 19.893879  1.604282 -1.122436  0.288274  0.353173
+[2,]  1.091459  0.324190  1.027276  0.343969 -0.079276  0.010215  0.006886
+[3,] -0.005692  1.040063 -0.099493 -0.003786 -0.005795 -0.000044  0.000022
+[4,]  0.002197  0.037262  1.273113 -0.024906 -0.015253  0.001169  0.000005
+[5,]  0.000583  0.225024 -0.259581  0.876711 -0.006790 -0.003916  0.001520
+[6,]  0.013577 -0.283780 -0.277464  0.327411  0.882570  0.007558 -0.008441</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         [,1]      [,2]      [,3]      [,4]      [,5]     [,6]     [,7]
 [1,]  5.8e-05  0.000022  0.000058  0.000005 -0.000018  1.0e-06  0.0e+00
-[2,]  2.2e-05  0.005209 -0.000194 -0.000049 -0.000001  1.0e-06 -7.0e-06
-[3,]  5.8e-05 -0.000194  0.016656 -0.000198 -0.000196  1.7e-05  1.4e-05
-[4,]  5.0e-06 -0.000049 -0.000198  0.001541 -0.000031 -9.0e-06 -8.0e-06
-[5,] -1.8e-05 -0.000001 -0.000196 -0.000031  0.000253  0.0e+00 -2.0e-06
+[2,]  2.2e-05  0.005206 -0.000194 -0.000052 -0.000002  1.0e-06 -7.0e-06
+[3,]  5.8e-05 -0.000194  0.016648 -0.000198 -0.000197  1.7e-05  1.4e-05
+[4,]  5.0e-06 -0.000052 -0.000198  0.001541 -0.000031 -9.0e-06 -8.0e-06
+[5,] -1.8e-05 -0.000002 -0.000197 -0.000031  0.000253  0.0e+00 -2.0e-06
 [6,]  1.0e-06  0.000001  0.000017 -0.000009  0.000000  4.0e-06  1.0e-06</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 165.8825</code></pre>
+<pre><code>[1] 166.013</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
@@ -653,6 +654,60 @@ p(k |Y,X, A,\Sigma) &amp;\sim IG2(\overline{S_{k}}, \overline{v_{k}} ) \\
 </div>
 </div>
 <p>We can see that compared to basic model, the extended model gives more variability of <span class="math inline">\(A\)</span>. For house lending amount, it has larger range which range from 0.9 to 1.3, and that in basic model range from 0.94 to 1.06. For business lending amount, the result from both models don’t have strong difference.</p>
+</section>
+<section id="proving-model" class="level3">
+<h3 class="anchored" data-anchor-id="proving-model">Proving Model</h3>
+<p>In this section, I simulate 10000 observations for Gaussian random walk process to prove the models. The codes below can prove that the basic and extended models can replicate the correct variables in DGP.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sim1 <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">10000</span>, <span class="dv">0</span>, <span class="at">sd=</span><span class="dv">1</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sim2 <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">10000</span>, <span class="dv">0</span>, <span class="at">sd=</span><span class="dv">1</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>sim<span class="ot">=</span> <span class="fu">cbind</span>(sim1,sim2)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Define data X, Y </span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">=</span> <span class="fu">ts</span>(sim[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(sim),], <span class="at">frequency=</span><span class="dv">1</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>X <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">1</span>,<span class="fu">nrow</span>(Y),<span class="dv">1</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>X <span class="ot">=</span> <span class="fu">cbind</span>(X,sim[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(sim)<span class="sc">-</span><span class="dv">1</span>,])</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Test on basic model</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>N           <span class="ot">=</span> <span class="fu">ncol</span>(Y)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>p           <span class="ot">=</span> <span class="fu">frequency</span>(Y)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>A.hat       <span class="ot">=</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X)<span class="sc">%*%</span><span class="fu">t</span>(X)<span class="sc">%*%</span>Y</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>Sigma.hat   <span class="ot">=</span> <span class="fu">t</span>(Y<span class="sc">-</span>X<span class="sc">%*%</span>A.hat)<span class="sc">%*%</span>(Y<span class="sc">-</span>X<span class="sc">%*%</span>A.hat)<span class="sc">/</span><span class="fu">nrow</span>(Y)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior distribution specification - Minnesota prior </span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>kappa<span class="fl">.1</span>     <span class="ot">=</span> <span class="dv">1</span>                                   <span class="co"># shrinkage for A1 to Ap</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>kappa<span class="fl">.2</span>     <span class="ot">=</span> <span class="dv">10</span>                                  <span class="co"># shrinkage for constant </span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>A.prior     <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="fu">nrow</span>(A.hat),<span class="fu">ncol</span>(A.hat))</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>A.prior[<span class="dv">2</span><span class="sc">:</span>(N <span class="sc">+</span> <span class="dv">1</span>),] <span class="ot">=</span> <span class="fu">diag</span>(N)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>V.prior     <span class="ot">=</span> <span class="fu">diag</span>(<span class="fu">c</span>(kappa<span class="fl">.2</span>,kappa<span class="fl">.1</span><span class="sc">*</span>((<span class="dv">1</span><span class="sc">:</span>p)<span class="sc">^</span>(<span class="sc">-</span><span class="dv">2</span>))<span class="sc">%x%</span><span class="fu">rep</span>(<span class="dv">1</span>,N)))</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>S.prior     <span class="ot">=</span> <span class="fu">diag</span>(<span class="fu">diag</span>(Sigma.hat))</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>nu.prior    <span class="ot">=</span> N<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Applying function </span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>posterior.sample.draws <span class="ot">=</span> <span class="fu">posterior.draws</span>(<span class="at">S=</span><span class="dv">100000</span>, <span class="at">Y=</span>Y, <span class="at">X=</span>X)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(posterior.sample.draws<span class="sc">$</span>A.posterior, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">6</span>)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(posterior.sample.draws<span class="sc">$</span>Sigma.posterior, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>kappa<span class="fl">.1</span>     <span class="ot">=</span> <span class="dv">1</span>                                </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>kappa<span class="fl">.2</span>     <span class="ot">=</span> <span class="dv">10</span>                            </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>sim1        <span class="ot">=</span> <span class="dv">1000</span>                              </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>sim2        <span class="ot">=</span> <span class="dv">10000</span>                              </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>total     <span class="ot">=</span> sim1<span class="sc">+</span>sim2</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>A.posterior       <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>((<span class="dv">1</span><span class="sc">+</span>N<span class="sc">*</span>p),N,sim1<span class="sc">+</span>sim2))</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>Sigma.posterior   <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(N,N,sim1<span class="sc">+</span>sim2))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>k.posterior       <span class="ot">=</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, sim1<span class="sc">+</span>sim2, <span class="dv">1</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>k.posterior[<span class="dv">1</span>]    <span class="ot">=</span> <span class="dv">10</span>                         <span class="co"># set k0 </span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior IG2 distribution: kappa</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>S.k.prior   <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>nu.k.prior  <span class="ot">=</span> <span class="dv">4</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Applying function </span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>posterior.ext <span class="ot">=</span> <span class="fu">posterior.draws.exten</span>(<span class="at">total =</span> total, <span class="at">Y=</span>Y, <span class="at">X=</span>X)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(posterior.ext<span class="sc">$</span>A.posterior.exten[,,(sim1<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>sim2], <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">6</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(posterior.ext<span class="sc">$</span>Sigma.posterior.exten[,,(sim1<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>sim2], <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 </section>
 <section id="model-forecasting" class="level2">

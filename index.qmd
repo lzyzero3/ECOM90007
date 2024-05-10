@@ -726,8 +726,72 @@ We can see that compared to basic model, the extended model gives more variabili
 
 
 
+### Proving Model 
+
+In this section, I simulate 10000 observations for Gaussian random walk process to prove the models. The codes below can prove that the basic and extended models can replicate the correct variables in DGP.
 
 
+```{r basic model prove}
+#| echo: true
+#| message: false
+#| warning: false
+#| eval: false
+sim1 = cumsum(rnorm(10000, 0, sd=1))
+sim2 = cumsum(rnorm(10000, 0, sd=1))
+sim= cbind(sim1,sim2)
+
+## Define data X, Y 
+Y = ts(sim[2:nrow(sim),], frequency=1)
+X = matrix(1,nrow(Y),1)
+X = cbind(X,sim[2:nrow(sim)-1,])
+
+## Test on basic model
+N           = ncol(Y)
+p           = frequency(Y)
+A.hat       = solve(t(X)%*%X)%*%t(X)%*%Y
+Sigma.hat   = t(Y-X%*%A.hat)%*%(Y-X%*%A.hat)/nrow(Y)
+
+# Prior distribution specification - Minnesota prior 
+kappa.1     = 1                                   # shrinkage for A1 to Ap
+kappa.2     = 10                                  # shrinkage for constant 
+A.prior     = matrix(0,nrow(A.hat),ncol(A.hat))
+A.prior[2:(N + 1),] = diag(N)
+V.prior     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+S.prior     = diag(diag(Sigma.hat))
+nu.prior    = N+1
+
+# Applying function 
+posterior.sample.draws = posterior.draws(S=100000, Y=Y, X=X)
+round(apply(posterior.sample.draws$A.posterior, 1:2, mean),6)
+round(apply(posterior.sample.draws$Sigma.posterior, 1:2, mean),6)
+```
+
+
+```{r extended model prove}
+#| echo: true
+#| message: false
+#| warning: false
+#| eval: false
+
+kappa.1     = 1                                
+kappa.2     = 10                            
+sim1        = 1000                              
+sim2        = 10000                              
+total     = sim1+sim2
+A.posterior       = array(NA, dim = c((1+N*p),N,sim1+sim2))
+Sigma.posterior   = array(NA, dim = c(N,N,sim1+sim2))
+k.posterior       = matrix(NA, sim1+sim2, 1)
+k.posterior[1]    = 10                         # set k0 
+
+# Prior IG2 distribution: kappa
+S.k.prior   = 2
+nu.k.prior  = 4
+
+# Applying function 
+posterior.ext = posterior.draws.exten(total = total, Y=Y, X=X)
+round(apply(posterior.ext$A.posterior.exten[,,(sim1+1):sim2], 1:2, mean),6)
+round(apply(posterior.ext$Sigma.posterior.exten[,,(sim1+1):sim2], 1:2, mean),6)
+```
 
 
 ## Model Forecasting 
