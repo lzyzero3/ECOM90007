@@ -738,6 +738,8 @@ In this section, I simulate 10000 observations for Gaussian random walk process 
 #| echo: true
 #| message: false
 #| warning: false
+#| eval: false
+
 sim1 = cumsum(rnorm(10000, 0, sd=1))
 sim2 = cumsum(rnorm(10000, 0, sd=1))
 sim= cbind(sim1,sim2)
@@ -776,6 +778,7 @@ round(apply(posterior.sample.draws$Sigma.posterior, 1:2, mean),6)
 #| echo: true
 #| message: false
 #| warning: false
+#| eval: false
 
 kappa.1     = 1                                
 kappa.2     = 10                            
