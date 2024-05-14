@@ -971,9 +971,6 @@ And the business lending amount will end the downward trend and a growth will oc
 
 
 ```{r}
-#| echo: true
-#| message: false
-#| warning: false
 ## Applying function 
 S1                         = 5000                             
 S2                         = 20000                             
