@@ -577,8 +577,8 @@ hist(posterior.sample.draws$A.posterior[3,2,], xlab = "businesslend", col = "#ED
 plot.ts(posterior.sample.draws$Sigma.posterior[2,2,], xlab = "Simulation times S", ylab = "businesslend sigma", col = "#8EE4AF")   
 hist(posterior.sample.draws$Sigma.posterior[2,2,], xlab = "businesslend sigma", col = "#8EE4AF", main = '')     
 
-```
 
+```
 
 
 ### Extended Model 
@@ -612,8 +612,8 @@ p(k |Y,X,A,\Sigma ) &\propto L(Y,X|A,\Sigma)p(A,\Sigma, k)\\
 ```
 ```{=tex}
 \begin{align}
-p(k |Y,X,A,\Sigma ) &\propto \det(k\underline{V})^{-\frac{N}{2}}\exp\left\{-\frac{1}{2}TR[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})] \right\} k^{-\frac{\underline{v_{k}+2}}{2}}\exp\left\{ -\frac{1}{2}\frac{\underline{S_{k}}}{k} \right\} \\
-& = k^{-\frac{kN+\underline{v_{k}+2}}{2}}\exp\left\{-\frac{1}{2}\frac{TR[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})]+\underline{S_{k}}}{k} \right\}
+p(k |Y,X,A,\Sigma ) &\propto \det(k\underline{V})^{-\frac{N}{2}}\exp\left\{-\frac{1}{2}tr[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})] \right\} k^{-\frac{\underline{v_{k}+2}}{2}}\exp\left\{ -\frac{1}{2}\frac{\underline{S_{k}}}{k} \right\} \\
+& = k^{-\frac{kN+\underline{v_{k}+2}}{2}}\exp\left\{-\frac{1}{2}\frac{tr[\Sigma^{-1}(A-\underline{A})'\underline{V}^{-1}(A-\underline{A})]+\underline{S_{k}}}{k} \right\}
 \end{align}
 ```
 
