@@ -226,7 +226,7 @@ Therefore, in my project, these following specific variables are used in BVAR mo
 
 -   $gdp_t$: Expenditure on Gross Domestic Product (GDP) aggregate from ABS Database
 
--   $unemploy_t$: Unemplyemnt person aggregate from ABS Database
+-   $unemploy_t$: Unemplyment person aggregate from ABS Database
 
 For the loan volumes to be forecasted, I have categorized them into housing loans and commercial loans, as they represent two distinct types of demand. The underlying logic influenced by macroeconomic factors might differ between them:
 
@@ -659,7 +659,7 @@ The graphs below show the posterior distribution for $houselend_t$ and $business
 #| warning: false
 # setup 
 S1                = 5000                             # determine the burn-in draws
-S2                = 20000                            # number of draws from the final simulation
+S2                = 45000                            # number of draws from the final simulation
 total_step           = S1+S2
 A.posterior       = array(NA, dim = c((1+N*p),N,S1+S2))
 Sigma.posterior   = array(NA, dim = c(N,N,S1+S2))
@@ -672,7 +672,7 @@ S.k.prior         = 3
 nu.k.prior        = 5
 
 ## Posterior sample draw function for extended model  
-posterior.draws.exten = function (total_steptep, Y, X){
+posterior.draws.exten = function (total_step, Y, X){
 for (s in 1:total_step){
     # normal-inverse Wishard posterior parameters
     V.bar.inv              = t(X)%*%X + diag(1/ diag( k.posterior[s]* V.prior))
@@ -692,7 +692,7 @@ for (s in 1:total_step){
     
     # posterior draws for k
     if (s!=total_step){
-    S.k.bar                = sum(diag( Sigma.posterior.IW[,,1] * t(A.posterior[,,s]-A.prior)%*%diag(1/diag(V.prior))%*%(A.posterior[,,s]-A.prior) )) + S.k.prior
+    S.k.bar                = sum(diag( Sigma.posterior.IW[,,1] %*% t(A.posterior[,,s]-A.prior)%*%diag(1/diag(V.prior))%*%(A.posterior[,,s]-A.prior) )) + S.k.prior
     nu.k.bar               = (1+p*N)*N+ nu.k.prior 
     k.draw.tmp             = rchisq(1, df=nu.k.bar)
     k.draw                 = S.k.bar/k.draw.tmp
@@ -782,8 +782,8 @@ round(apply(posterior.sample.draws$Sigma.posterior, 1:2, mean),6)
 
 kappa.1     = 1                                
 kappa.2     = 10                            
-sim1        = 1000                              
-sim2        = 10000                              
+sim1        = 100                              
+sim2        = 1000                              
 total     = sim1+sim2
 A.posterior       = array(NA, dim = c((1+N*p),N,sim1+sim2))
 Sigma.posterior   = array(NA, dim = c(N,N,sim1+sim2))
